@@ -1,0 +1,6 @@
+{
+  "name": "Beatrix.gl",
+  "description": "Digital gaming marketplace for in-game currencies, accounts, items, boosting, and gift cards with frosted glass aesthetics, seller verification, and integrated multi-currency wallet.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

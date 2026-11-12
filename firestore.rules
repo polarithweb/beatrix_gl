@@ -1,0 +1,430 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 1 & Phase 4.1: Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Phase 3: Reusable Hardened Global Helpers
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerifiedUser() && request.auth.token.email == 'priyam.dgp13@gmail.com';
+    }
+
+    function isAdmin() {
+      return isVerifiedUser() && (
+        request.auth.token.email == 'priyam.dgp13@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Validation Blueprint 1: SiteSettings
+    function isValidSiteSettings(data) {
+      return data.keys().hasAll([
+        'siteName', 'logoUrl', 'announcementText', 'heroBannerUrl',
+        'heroTitle', 'heroSubtitle', 'heroCtaText', 'paymentBadges',
+        'supportLinks', 'legalLinks', 'copyrightText', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'siteName', 'logoUrl', 'announcementText', 'heroBannerUrl',
+        'heroTitle', 'heroSubtitle', 'heroCtaText', 'paymentBadges',
+        'supportLinks', 'legalLinks', 'copyrightText', 'updatedAt'
+      ]) &&
+      data.siteName is string && data.siteName.size() >= 1 && data.siteName.size() <= 80 &&
+      data.logoUrl is string && data.logoUrl.size() <= 600000 &&
+      data.announcementText is string && data.announcementText.size() <= 240 &&
+      data.heroBannerUrl is string && data.heroBannerUrl.size() <= 600000 &&
+      data.heroTitle is string && data.heroTitle.size() <= 140 &&
+      data.heroSubtitle is string && data.heroSubtitle.size() <= 300 &&
+      data.heroCtaText is string && data.heroCtaText.size() <= 60 &&
+      data.paymentBadges is list && data.paymentBadges.size() <= 10 &&
+      (data.paymentBadges.size() == 0 || (data.paymentBadges[0] is string && data.paymentBadges[0].size() <= 50)) &&
+      data.supportLinks is list && data.supportLinks.size() <= 10 &&
+      (data.supportLinks.size() == 0 || (data.supportLinks[0] is string && data.supportLinks[0].size() <= 200)) &&
+      data.legalLinks is list && data.legalLinks.size() <= 10 &&
+      (data.legalLinks.size() == 0 || (data.legalLinks[0] is string && data.legalLinks[0].size() <= 200)) &&
+      data.copyrightText is string && data.copyrightText.size() <= 160 &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 2: Category
+    function isValidCategory(data) {
+      return data.keys().hasAll([
+        'name', 'slug', 'description', 'iconName', 'order', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'name', 'slug', 'description', 'iconName', 'order', 'createdAt', 'updatedAt'
+      ]) &&
+      data.name is string && data.name.size() >= 1 && data.name.size() <= 60 &&
+      data.slug is string && data.slug.size() >= 1 && data.slug.size() <= 60 && data.slug.matches('^[a-z0-9\\-]+$') &&
+      data.description is string && data.description.size() <= 200 &&
+      data.iconName is string && data.iconName.size() <= 40 &&
+      data.order is number && data.order >= 0 && data.order <= 10000 &&
+      data.createdAt is timestamp &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 3: Game
+    function isValidGame(data) {
+      return data.keys().hasAll([
+        'title', 'slug', 'iconUrl', 'bannerUrl', 'featured', 'categoryIds', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'title', 'slug', 'iconUrl', 'bannerUrl', 'featured', 'categoryIds', 'createdAt', 'updatedAt'
+      ]) &&
+      data.title is string && data.title.size() >= 1 && data.title.size() <= 100 &&
+      data.slug is string && data.slug.size() >= 1 && data.slug.size() <= 100 && data.slug.matches('^[a-z0-9\\-]+$') &&
+      data.iconUrl is string && data.iconUrl.size() <= 600000 &&
+      data.bannerUrl is string && data.bannerUrl.size() <= 600000 &&
+      data.featured is bool &&
+      data.categoryIds is list && data.categoryIds.size() <= 10 &&
+      (data.categoryIds.size() == 0 || (data.categoryIds[0] is string && data.categoryIds[0].size() <= 128)) &&
+      data.createdAt is timestamp &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 4: Listing
+    function isValidListing(data) {
+      return data.keys().hasAll([
+        'gameId', 'gameSlug', 'gameTitle', 'categoryId', 'categoryName',
+        'title', 'description', 'price', 'stock', 'deliverySpeed',
+        'sellerName', 'sellerRating', 'imageUrl', 'active', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'gameId', 'gameSlug', 'gameTitle', 'categoryId', 'categoryName',
+        'title', 'description', 'price', 'stock', 'deliverySpeed',
+        'sellerName', 'sellerRating', 'imageUrl', 'active', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.gameId) &&
+      data.gameSlug is string && data.gameSlug.size() >= 1 && data.gameSlug.size() <= 100 &&
+      data.gameTitle is string && data.gameTitle.size() >= 1 && data.gameTitle.size() <= 100 &&
+      isValidId(data.categoryId) &&
+      data.categoryName is string && data.categoryName.size() >= 1 && data.categoryName.size() <= 60 &&
+      data.title is string && data.title.size() >= 1 && data.title.size() <= 140 &&
+      data.description is string && data.description.size() <= 2000 &&
+      data.price is number && data.price >= 0 && data.price <= 1000000 &&
+      data.stock is number && data.stock >= 0 && data.stock <= 1000000 &&
+      data.deliverySpeed is string && data.deliverySpeed.size() >= 1 && data.deliverySpeed.size() <= 40 &&
+      data.sellerName is string && data.sellerName.size() >= 1 && data.sellerName.size() <= 60 &&
+      data.sellerRating is number && data.sellerRating >= 0 && data.sellerRating <= 5 &&
+      data.imageUrl is string && data.imageUrl.size() <= 600000 &&
+      data.active is bool &&
+      data.createdAt is timestamp &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 5: Order
+    function isValidOrder(data) {
+      return data.keys().hasAll([
+        'listingId', 'listingTitle', 'gameTitle', 'categoryName', 'sellerName',
+        'quantity', 'unitPrice', 'totalPrice', 'buyerUid', 'buyerEmail',
+        'buyerName', 'deliveryInstructions', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'listingId', 'listingTitle', 'gameTitle', 'categoryName', 'sellerName',
+        'quantity', 'unitPrice', 'totalPrice', 'buyerUid', 'buyerEmail',
+        'buyerName', 'deliveryInstructions', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.listingId) &&
+      data.listingTitle is string && data.listingTitle.size() >= 1 && data.listingTitle.size() <= 140 &&
+      data.gameTitle is string && data.gameTitle.size() >= 1 && data.gameTitle.size() <= 100 &&
+      data.categoryName is string && data.categoryName.size() >= 1 && data.categoryName.size() <= 60 &&
+      data.sellerName is string && data.sellerName.size() >= 1 && data.sellerName.size() <= 60 &&
+      data.quantity is number && data.quantity >= 1 && data.quantity <= 10000 &&
+      data.unitPrice is number && data.unitPrice >= 0 && data.unitPrice <= 1000000 &&
+      data.totalPrice is number && data.totalPrice >= 0 && data.totalPrice <= 10000000 &&
+      isValidId(data.buyerUid) &&
+      data.buyerEmail is string && data.buyerEmail.size() >= 3 && data.buyerEmail.size() <= 160 &&
+      data.buyerName is string && data.buyerName.size() >= 1 && data.buyerName.size() <= 100 &&
+      data.deliveryInstructions is string && data.deliveryInstructions.size() >= 1 && data.deliveryInstructions.size() <= 500 &&
+      data.status in ['Pending', 'Completed', 'Cancelled'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 6: AdminGrant
+    function isValidAdminGrant(data) {
+      return data.keys().hasAll(['uid', 'email', 'grantToken', 'createdAt']) &&
+      data.keys().hasOnly(['uid', 'email', 'grantToken', 'createdAt']) &&
+      isValidId(data.uid) &&
+      data.uid == request.auth.uid &&
+      data.email is string && data.email.size() >= 3 && data.email.size() <= 160 &&
+      data.grantToken is string && data.grantToken.size() == 25 &&
+      data.grantToken == 'POLARITH_ADMIN_8825_GRANT' &&
+      data.createdAt == request.time;
+    }
+
+    // Validation Blueprint 7: SellerApplication
+    function isValidSellerApplication(data) {
+      return data.keys().hasAll([
+        'userId', 'userEmail', 'fullName', 'address', 'phoneNumber',
+        'whatsappNumber', 'nationalIdUrl', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId', 'userEmail', 'fullName', 'address', 'phoneNumber',
+        'whatsappNumber', 'nationalIdUrl', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.userId) &&
+      data.userEmail is string && data.userEmail.size() >= 3 && data.userEmail.size() <= 160 &&
+      data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120 &&
+      data.address is string && data.address.size() >= 5 && data.address.size() <= 400 &&
+      data.phoneNumber is string && data.phoneNumber.size() >= 5 && data.phoneNumber.size() <= 30 &&
+      data.whatsappNumber is string && data.whatsappNumber.size() >= 5 && data.whatsappNumber.size() <= 30 &&
+      data.nationalIdUrl is string && data.nationalIdUrl.size() <= 600000 &&
+      data.status in ['Pending', 'Approved', 'Rejected', 'Banned'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 8: Seller
+    function isValidSeller(data) {
+      return data.keys().hasAll(['userId', 'userEmail', 'fullName', 'status', 'createdAt', 'updatedAt']) &&
+      isValidId(data.userId) &&
+      data.userEmail is string && data.userEmail.size() >= 3 && data.userEmail.size() <= 160 &&
+      data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120 &&
+      data.status in ['Active', 'Banned'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 9: Wallet
+    function isValidWallet(data) {
+      return data.keys().hasAll(['userId', 'balanceInr', 'updatedAt']) &&
+      data.keys().hasOnly(['userId', 'balanceInr', 'updatedAt']) &&
+      isValidId(data.userId) &&
+      data.balanceInr is number && data.balanceInr >= 0 &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 10: WalletTransaction
+    function isValidWalletTransaction(data) {
+      return data.keys().hasAll(['userId', 'type', 'amountInr', 'description', 'status', 'createdAt']) &&
+      isValidId(data.userId) &&
+      data.type in ['Deposit', 'Purchase', 'Sale', 'Withdrawal'] &&
+      data.amountInr is number && data.amountInr > 0 &&
+      data.description is string && data.description.size() <= 300 &&
+      data.status in ['Completed', 'Pending', 'Rejected'] &&
+      data.createdAt is timestamp;
+    }
+
+    // Collection 1: siteSettings (Public Read, Admin Write)
+    match /siteSettings/{settingId} {
+      allow get: if isValidId(settingId) && settingId == 'global';
+      allow list: if true;
+      allow create: if isVerifiedUser() && isValidId(settingId) && settingId == 'global' && isValidSiteSettings(incoming()) && isAdmin();
+      allow update: if isVerifiedUser() && isValidId(settingId) && settingId == 'global' && isValidSiteSettings(incoming()) && (
+        (incoming().diff(existing()).affectedKeys().hasOnly([
+          'siteName', 'logoUrl', 'announcementText', 'heroBannerUrl',
+          'heroTitle', 'heroSubtitle', 'heroCtaText', 'paymentBadges',
+          'supportLinks', 'legalLinks', 'copyrightText', 'updatedAt'
+        ]) && isAdmin()) ||
+        isAdmin()
+      );
+      allow delete: if isVerifiedUser() && isValidId(settingId) && isAdmin();
+    }
+
+    // Collection 2: categories (Public Read, Admin Write)
+    match /categories/{categoryId} {
+      allow get: if isValidId(categoryId);
+      allow list: if true;
+      allow create: if isVerifiedUser() && isValidId(categoryId) && isValidCategory(incoming()) && incoming().createdAt == request.time && isAdmin();
+      allow update: if isVerifiedUser() && isValidId(categoryId) && isValidCategory(incoming()) && incoming().createdAt == existing().createdAt && (
+        (incoming().diff(existing()).affectedKeys().hasOnly([
+          'name', 'slug', 'description', 'iconName', 'order', 'updatedAt'
+        ]) && isAdmin()) ||
+        isAdmin()
+      );
+      allow delete: if isVerifiedUser() && isValidId(categoryId) && isAdmin();
+    }
+
+    // Collection 3: games (Public Read, Admin Write)
+    match /games/{gameId} {
+      allow get: if isValidId(gameId);
+      allow list: if true;
+      allow create: if isVerifiedUser() && isValidId(gameId) && isValidGame(incoming()) && incoming().createdAt == request.time && isAdmin();
+      allow update: if isVerifiedUser() && isValidId(gameId) && isValidGame(incoming()) && incoming().createdAt == existing().createdAt && (
+        (incoming().diff(existing()).affectedKeys().hasOnly([
+          'title', 'slug', 'iconUrl', 'bannerUrl', 'featured', 'categoryIds', 'updatedAt'
+        ]) && isAdmin()) ||
+        isAdmin()
+      );
+      allow delete: if isVerifiedUser() && isValidId(gameId) && isAdmin();
+    }
+
+    // Collection 4: listings (Public Read, Admin Write + Relational Existence Check)
+    match /listings/{listingId} {
+      allow get: if isValidId(listingId);
+      allow list: if true;
+      allow create: if isVerifiedUser() &&
+        isValidId(listingId) &&
+        isValidListing(incoming()) &&
+        incoming().createdAt == request.time &&
+        isAdmin() &&
+        exists(/databases/$(database)/documents/games/$(incoming().gameId)) &&
+        exists(/databases/$(database)/documents/categories/$(incoming().categoryId));
+      allow update: if isVerifiedUser() &&
+        isValidId(listingId) &&
+        isValidListing(incoming()) &&
+        incoming().createdAt == existing().createdAt && (
+          // Action 1: Buyer checkout stock decrement
+          (incoming().diff(existing()).affectedKeys().hasOnly(['stock', 'updatedAt']) &&
+           incoming().gameId == existing().gameId &&
+           incoming().categoryId == existing().categoryId &&
+           incoming().stock <= existing().stock &&
+           incoming().stock >= 0) ||
+          // Action 2: Admin full listing management
+          (incoming().diff(existing()).affectedKeys().hasOnly([
+            'gameId', 'gameSlug', 'gameTitle', 'categoryId', 'categoryName',
+            'title', 'description', 'price', 'stock', 'deliverySpeed',
+            'sellerName', 'sellerRating', 'imageUrl', 'active', 'updatedAt'
+          ]) && isAdmin()) ||
+          isAdmin()
+        );
+      allow delete: if isVerifiedUser() && isValidId(listingId) && isAdmin();
+    }
+
+    // Collection 5: orders (PII Isolated to Buyer Owner or Admin; Validated Create)
+    match /orders/{orderId} {
+      allow get: if isVerifiedUser() && isValidId(orderId) && (
+        (resource != null && resource.data.buyerUid == request.auth.uid) || isAdmin()
+      );
+      allow list: if isVerifiedUser() && (
+        isAdmin() || (resource != null && resource.data.buyerUid == request.auth.uid)
+      );
+      allow create: if isVerifiedUser() &&
+        isValidId(orderId) &&
+        isValidOrder(incoming()) &&
+        incoming().buyerUid == request.auth.uid &&
+        incoming().status == 'Pending' &&
+        incoming().createdAt == request.time &&
+        exists(/databases/$(database)/documents/listings/$(incoming().listingId));
+      allow update: if isVerifiedUser() &&
+        isValidId(orderId) &&
+        isValidOrder(incoming()) &&
+        incoming().buyerUid == existing().buyerUid &&
+        incoming().listingId == existing().listingId &&
+        incoming().createdAt == existing().createdAt && (
+          // Action 1: Buyer cancellation while still Pending
+          (existing().buyerUid == request.auth.uid &&
+           existing().status == 'Pending' &&
+           incoming().status == 'Cancelled' &&
+           incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])) ||
+          // Action 2: Admin status transition override
+          (isAdmin() &&
+           incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])) ||
+          isAdmin()
+        );
+      allow delete: if isVerifiedUser() && isValidId(orderId) && isAdmin();
+    }
+
+    // Collection 6: admins (Verified Admin Session Registry)
+    match /admins/{adminId} {
+      allow get: if isVerifiedUser() && isValidId(adminId) && (request.auth.uid == adminId || isBootstrappedAdmin());
+      allow list: if isBootstrappedAdmin() && (resource != null && resource.data.uid is string);
+      allow create: if isVerifiedUser() && isValidId(adminId) && request.auth.uid == adminId && isValidAdminGrant(incoming());
+      allow update: if isVerifiedUser() && isValidId(adminId) && isValidAdminGrant(incoming()) && incoming().createdAt == existing().createdAt && isBootstrappedAdmin();
+      allow delete: if isVerifiedUser() && isValidId(adminId) && (request.auth.uid == adminId || isBootstrappedAdmin());
+    }
+
+    // Collection 7: sellerApplications (Applicant submits & views own, Admin reviews)
+    match /sellerApplications/{appId} {
+      allow get: if isVerifiedUser() && isValidId(appId) && (
+        request.auth.uid == appId ||
+        (resource != null && resource.data.userId == request.auth.uid) ||
+        isAdmin()
+      );
+      allow list: if isVerifiedUser() && (
+        isAdmin() ||
+        (resource != null && resource.data.userId == request.auth.uid)
+      );
+      allow create: if isVerifiedUser() &&
+        isValidId(appId) &&
+        request.auth.uid == appId &&
+        isValidSellerApplication(incoming()) &&
+        incoming().userId == request.auth.uid &&
+        incoming().status == 'Pending' &&
+        incoming().createdAt == request.time;
+      allow update: if isVerifiedUser() &&
+        isValidId(appId) &&
+        isValidSellerApplication(incoming()) &&
+        incoming().userId == existing().userId &&
+        incoming().createdAt == existing().createdAt &&
+        isAdmin();
+      allow delete: if isVerifiedUser() && isValidId(appId) && isAdmin();
+    }
+
+    // Collection 8: sellers (Public Read for reputation/badge, Admin Write for approve/ban)
+    match /sellers/{sellerId} {
+      allow get: if isValidId(sellerId);
+      allow list: if true;
+      allow create: if isVerifiedUser() && isValidId(sellerId) && isValidSeller(incoming()) && incoming().createdAt == request.time && isAdmin();
+      allow update: if isVerifiedUser() && isValidId(sellerId) && isValidSeller(incoming()) && incoming().createdAt == existing().createdAt && incoming().userId == existing().userId && isAdmin();
+      allow delete: if isVerifiedUser() && isValidId(sellerId) && isAdmin();
+    }
+
+    // Collection 9: wallets (User views/updates own wallet balance, Admin manages)
+    match /wallets/{walletId} {
+      allow get: if isVerifiedUser() && isValidId(walletId) && (
+        request.auth.uid == walletId ||
+        (resource != null && resource.data.userId == request.auth.uid) ||
+        isAdmin()
+      );
+      allow list: if isVerifiedUser() && isAdmin();
+      allow create: if isVerifiedUser() &&
+        isValidId(walletId) &&
+        request.auth.uid == walletId &&
+        isValidWallet(incoming()) &&
+        incoming().userId == request.auth.uid &&
+        incoming().balanceInr >= 0 &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser() &&
+        isValidId(walletId) &&
+        isValidWallet(incoming()) &&
+        (request.auth.uid == walletId || (resource != null && resource.data.userId == request.auth.uid)) &&
+        incoming().userId == request.auth.uid &&
+        incoming().balanceInr >= 0 &&
+        incoming().updatedAt == request.time;
+      allow delete: if isVerifiedUser() && isValidId(walletId) && isAdmin();
+    }
+
+    // Collection 10: walletTransactions (User creates and reads own transactions, Admin manages)
+    match /walletTransactions/{txId} {
+      allow get: if isVerifiedUser() && isValidId(txId) && (
+        (resource != null && resource.data.userId == request.auth.uid) ||
+        isAdmin()
+      );
+      allow list: if isVerifiedUser() && (
+        (resource != null && resource.data.userId == request.auth.uid) ||
+        isAdmin()
+      );
+      allow create: if isVerifiedUser() &&
+        isValidId(txId) &&
+        isValidWalletTransaction(incoming()) &&
+        incoming().userId == request.auth.uid &&
+        incoming().createdAt == request.time;
+      allow update: if isVerifiedUser() && isValidId(txId) && isAdmin();
+      allow delete: if isVerifiedUser() && isValidId(txId) && isAdmin();
+    }
+  }
+}

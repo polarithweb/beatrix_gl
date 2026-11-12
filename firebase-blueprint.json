@@ -1,0 +1,714 @@
+{
+  "entities": {
+    "SiteSettings": {
+      "title": "SiteSettings",
+      "description": "Global marketplace branding, hero banner, announcement bar, footer links, and payment method badges.",
+      "type": "object",
+      "properties": {
+        "siteName": {
+          "type": "string",
+          "description": "Brand name displayed in the navigation bar and footer.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "logoUrl": {
+          "type": "string",
+          "description": "URL or data URI for the site logo.",
+          "maxLength": 600000
+        },
+        "announcementText": {
+          "type": "string",
+          "description": "Top promotional announcement bar text.",
+          "maxLength": 240
+        },
+        "heroBannerUrl": {
+          "type": "string",
+          "description": "URL or data URI for the hero background banner.",
+          "maxLength": 600000
+        },
+        "heroTitle": {
+          "type": "string",
+          "description": "Main headline in the hero section.",
+          "maxLength": 140
+        },
+        "heroSubtitle": {
+          "type": "string",
+          "description": "Subheadline in the hero section.",
+          "maxLength": 300
+        },
+        "heroCtaText": {
+          "type": "string",
+          "description": "Call-to-action button label in the hero section.",
+          "maxLength": 60
+        },
+        "paymentBadges": {
+          "type": "array",
+          "description": "List of supported payment method badge names (bounded to max 10).",
+          "maxLength": 10
+        },
+        "supportLinks": {
+          "type": "array",
+          "description": "Support navigation links formatted as 'Label|URL' (bounded to max 10).",
+          "maxLength": 10
+        },
+        "legalLinks": {
+          "type": "array",
+          "description": "Legal and rules navigation links formatted as 'Label|URL' (bounded to max 10).",
+          "maxLength": 10
+        },
+        "copyrightText": {
+          "type": "string",
+          "description": "Copyright notice in the footer.",
+          "maxLength": 160
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the last update."
+        }
+      },
+      "required": [
+        "siteName",
+        "logoUrl",
+        "announcementText",
+        "heroBannerUrl",
+        "heroTitle",
+        "heroSubtitle",
+        "heroCtaText",
+        "paymentBadges",
+        "supportLinks",
+        "legalLinks",
+        "copyrightText",
+        "updatedAt"
+      ]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Marketplace product category (e.g. Currency, Accounts, Items, Boosting, Top Up, Gift Cards).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name of the category.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "slug": {
+          "type": "string",
+          "description": "URL-safe identifier slug.",
+          "minLength": 1,
+          "maxLength": 60,
+          "pattern": "^[a-z0-9\\-]+$"
+        },
+        "description": {
+          "type": "string",
+          "description": "Short description of the product type.",
+          "maxLength": 200
+        },
+        "iconName": {
+          "type": "string",
+          "description": "Icon identifier name.",
+          "maxLength": 40
+        },
+        "order": {
+          "type": "number",
+          "description": "Numeric display sort order."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp."
+        }
+      },
+      "required": [
+        "name",
+        "slug",
+        "description",
+        "iconName",
+        "order",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Game": {
+      "title": "Game",
+      "description": "Game catalog entry with icon, cover banner, featured status, and linked category IDs.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Game title.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "slug": {
+          "type": "string",
+          "description": "URL-safe game slug for /#/game/:slug.",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[a-z0-9\\-]+$"
+        },
+        "iconUrl": {
+          "type": "string",
+          "description": "URL or data URI for the square game icon.",
+          "maxLength": 600000
+        },
+        "bannerUrl": {
+          "type": "string",
+          "description": "URL or data URI for the wide game cover banner.",
+          "maxLength": 600000
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Whether the game is highlighted as featured."
+        },
+        "categoryIds": {
+          "type": "array",
+          "description": "Array of linked category document IDs (max 10).",
+          "maxLength": 10
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp."
+        }
+      },
+      "required": [
+        "title",
+        "slug",
+        "iconUrl",
+        "bannerUrl",
+        "featured",
+        "categoryIds",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Listing": {
+      "title": "Listing",
+      "description": "Marketplace offer tied to a specific game and category.",
+      "type": "object",
+      "properties": {
+        "gameId": {
+          "type": "string",
+          "description": "Referenced game document ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "gameSlug": {
+          "type": "string",
+          "description": "Slug of the referenced game.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "gameTitle": {
+          "type": "string",
+          "description": "Title of the referenced game.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "categoryId": {
+          "type": "string",
+          "description": "Referenced category document ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "categoryName": {
+          "type": "string",
+          "description": "Display name of the referenced category.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "title": {
+          "type": "string",
+          "description": "Listing offer title.",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed offer description and delivery instructions.",
+          "maxLength": 2000
+        },
+        "price": {
+          "type": "number",
+          "description": "Unit price in USD (>= 0)."
+        },
+        "stock": {
+          "type": "number",
+          "description": "Available quantity in stock (>= 0)."
+        },
+        "deliverySpeed": {
+          "type": "string",
+          "description": "Estimated delivery speed (e.g. Instant, 15 Minutes, 1 Hour, 24 Hours).",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "sellerName": {
+          "type": "string",
+          "description": "Seller display handle.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "sellerRating": {
+          "type": "number",
+          "description": "Seller rating from 0 to 5."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "Listing thumbnail URL or data URI.",
+          "maxLength": 600000
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Whether the offer is active and visible on the public marketplace."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp."
+        }
+      },
+      "required": [
+        "gameId",
+        "gameSlug",
+        "gameTitle",
+        "categoryId",
+        "categoryName",
+        "title",
+        "description",
+        "price",
+        "stock",
+        "deliverySpeed",
+        "sellerName",
+        "sellerRating",
+        "imageUrl",
+        "active",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer checkout order linked to a listing and authenticated Google buyer.",
+      "type": "object",
+      "properties": {
+        "listingId": {
+          "type": "string",
+          "description": "Purchased listing document ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "listingTitle": {
+          "type": "string",
+          "description": "Snapshot of the listing title at checkout.",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "gameTitle": {
+          "type": "string",
+          "description": "Snapshot of the game title.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "categoryName": {
+          "type": "string",
+          "description": "Snapshot of the category name.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "sellerName": {
+          "type": "string",
+          "description": "Snapshot of the seller handle.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Ordered item quantity (>= 1)."
+        },
+        "unitPrice": {
+          "type": "number",
+          "description": "Unit price in USD at checkout (>= 0)."
+        },
+        "totalPrice": {
+          "type": "number",
+          "description": "Total order price in USD (>= 0)."
+        },
+        "buyerUid": {
+          "type": "string",
+          "description": "Authenticated Firebase UID of the buyer.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "buyerEmail": {
+          "type": "string",
+          "description": "Authenticated email of the buyer.",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "buyerName": {
+          "type": "string",
+          "description": "Display name of the buyer.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "deliveryInstructions": {
+          "type": "string",
+          "description": "In-game character name, server/realm, or delivery notes.",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "description": "Order fulfillment status.",
+          "enum": ["Pending", "Completed", "Cancelled"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp."
+        }
+      },
+      "required": [
+        "listingId",
+        "listingTitle",
+        "gameTitle",
+        "categoryName",
+        "sellerName",
+        "quantity",
+        "unitPrice",
+        "totalPrice",
+        "buyerUid",
+        "buyerEmail",
+        "buyerName",
+        "deliveryInstructions",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminGrant": {
+      "title": "AdminGrant",
+      "description": "Authorized admin session record for verified administrators who unlock the hidden admin panel.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the administrator.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "description": "Verified email of the administrator.",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "grantToken": {
+          "type": "string",
+          "description": "Cryptographic verification token proving knowledge of the admin gate.",
+          "minLength": 10,
+          "maxLength": 64
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp."
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "grantToken",
+        "createdAt"
+      ]
+    },
+    "SellerApplication": {
+      "title": "SellerApplication",
+      "description": "Application submitted by a user to become a verified seller on Beatrix.gl.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the applicant.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Email address of the applicant.",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Full legal name of the applicant.",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "address": {
+          "type": "string",
+          "description": "Physical residential address.",
+          "minLength": 5,
+          "maxLength": 400
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Contact phone number.",
+          "minLength": 5,
+          "maxLength": 30
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "description": "WhatsApp contact number for buyer-seller messaging.",
+          "minLength": 5,
+          "maxLength": 30
+        },
+        "nationalIdUrl": {
+          "type": "string",
+          "description": "Compressed data URI or URL of government approved national ID document.",
+          "maxLength": 600000
+        },
+        "status": {
+          "type": "string",
+          "description": "Verification status.",
+          "enum": ["Pending", "Approved", "Rejected", "Banned"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Submission server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Review server timestamp."
+        }
+      },
+      "required": [
+        "userId",
+        "userEmail",
+        "fullName",
+        "address",
+        "phoneNumber",
+        "whatsappNumber",
+        "nationalIdUrl",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Seller": {
+      "title": "Seller",
+      "description": "Approved and verified seller record allowing offer creation and marketplace sales.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the seller.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Email address of the seller.",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Full verified name of the seller.",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Phone number.",
+          "maxLength": 30
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "description": "WhatsApp number.",
+          "maxLength": 30
+        },
+        "address": {
+          "type": "string",
+          "description": "Physical address.",
+          "maxLength": 400
+        },
+        "status": {
+          "type": "string",
+          "description": "Seller account status.",
+          "enum": ["Active", "Banned"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Approval server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp."
+        }
+      },
+      "required": [
+        "userId",
+        "userEmail",
+        "fullName",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Wallet": {
+      "title": "Wallet",
+      "description": "User wallet holding balance in INR for purchases and sales payouts.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the wallet owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "balanceInr": {
+          "type": "number",
+          "description": "Wallet balance in Indian Rupees (INR, >= 0)."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp."
+        }
+      },
+      "required": [
+        "userId",
+        "balanceInr",
+        "updatedAt"
+      ]
+    },
+    "WalletTransaction": {
+      "title": "WalletTransaction",
+      "description": "Audit record for any credit or debit in a user's wallet.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the wallet owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "type": {
+          "type": "string",
+          "description": "Transaction category.",
+          "enum": ["Deposit", "Purchase", "Sale", "Withdrawal"]
+        },
+        "amountInr": {
+          "type": "number",
+          "description": "Transaction amount in INR (> 0)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Details or notes about this transaction.",
+          "maxLength": 300
+        },
+        "status": {
+          "type": "string",
+          "description": "Transaction status.",
+          "enum": ["Completed", "Pending", "Rejected"]
+        },
+        "payoutDetails": {
+          "type": "string",
+          "description": "Bank account, UPI ID, or payment destination for withdrawals.",
+          "maxLength": 200
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp."
+        }
+      },
+      "required": [
+        "userId",
+        "type",
+        "amountInr",
+        "description",
+        "status",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/siteSettings/{settingId}": {
+      "schema": { "$ref": "#/entities/SiteSettings" },
+      "description": "Global marketplace branding and banner settings (single document 'global')."
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Marketplace product type categories."
+    },
+    "/games/{gameId}": {
+      "schema": { "$ref": "#/entities/Game" },
+      "description": "Games catalog with icons, banners, and linked categories."
+    },
+    "/listings/{listingId}": {
+      "schema": { "$ref": "#/entities/Listing" },
+      "description": "Marketplace offers linked to games and categories."
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Customer checkout orders and status tracking."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminGrant" },
+      "description": "Verified administrator access grants."
+    },
+    "/sellerApplications/{appId}": {
+      "schema": { "$ref": "#/entities/SellerApplication" },
+      "description": "Applications to become a seller on Beatrix.gl with KYC National ID."
+    },
+    "/sellers/{sellerId}": {
+      "schema": { "$ref": "#/entities/Seller" },
+      "description": "Approved sellers verified by the admin with ban management."
+    },
+    "/wallets/{walletId}": {
+      "schema": { "$ref": "#/entities/Wallet" },
+      "description": "User wallet balance records in INR with minimum withdrawal threshold of 1000 INR."
+    },
+    "/walletTransactions/{txId}": {
+      "schema": { "$ref": "#/entities/WalletTransaction" },
+      "description": "Wallet transaction audit logs for deposits, purchases, sales, and withdrawals."
+    }
+  }
+}

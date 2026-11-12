@@ -1,0 +1,171 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: linear-gradient(135deg, #FFFFFF 0%, #FFF0F5 40%, #FCE4EC 100%);
+    color: #0F172A; /* Deep dark slate for maximum crisp readability */
+    letter-spacing: 0.01em;
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    color: #0F172A;
+  }
+
+  .font-mono, .tabular-nums {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* High-Contrast Frosted Glass Cards */
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05), 0 2px 8px rgba(244, 114, 182, 0.08);
+}
+
+.frosted-glass-strong {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(244, 114, 182, 0.1);
+}
+
+/* High-Contrast Neomorphic Soft-Extrusion and Inputs */
+.neu-flat {
+  background: #FFFFFF;
+  box-shadow: 4px 4px 12px rgba(226, 232, 240, 0.8), -3px -3px 8px rgba(255, 255, 255, 1);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.neu-flat:hover {
+  box-shadow: 2px 2px 8px rgba(203, 213, 225, 0.9), -2px -2px 6px rgba(255, 255, 255, 1);
+  border-color: rgba(148, 163, 184, 0.6);
+}
+
+.neu-pressed {
+  background: #F8FAFC;
+  box-shadow: inset 2px 2px 5px rgba(203, 213, 225, 0.7), inset -2px -2px 5px rgba(255, 255, 255, 1);
+  border: 1.5px solid #CBD5E1;
+  color: #0F172A;
+}
+
+.neu-circle {
+  border-radius: 9999px;
+  background: linear-gradient(145deg, #FFFFFF, #F1F5F9);
+  box-shadow: 4px 4px 12px rgba(203, 213, 225, 0.8), -4px -4px 12px rgba(255, 255, 255, 1);
+  border: 1px solid #E2E8F0;
+}
+
+/* =========================================================================
+   Navy Blue & Light Pink Button System
+   ========================================================================= */
+
+/* Primary Action Button: Deep Navy Blue with Light Pink Border & Ambient Glow */
+.btn-navy {
+  background: linear-gradient(135deg, #0A1128 0%, #101E3D 60%, #1E293B 100%) !important;
+  color: #FFFFFF !important;
+  font-weight: 700;
+  border: 1.5px solid #FBCFE8 !important; /* Crisp light-pink accent border */
+  box-shadow: 0 4px 14px rgba(10, 17, 40, 0.28), 0 0 10px rgba(244, 114, 182, 0.24);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-navy:hover {
+  background: linear-gradient(135deg, #101E3D 0%, #1E293B 55%, #2D1B36 100%) !important;
+  border-color: #F472B6 !important; /* Vibrant light-pink border on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(10, 17, 40, 0.35), 0 0 16px rgba(244, 114, 182, 0.42);
+}
+
+.btn-navy:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(10, 17, 40, 0.25);
+}
+
+.btn-navy:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Secondary Action Button: Light Pink Surface with Navy Blue Border & Typography */
+.btn-navy-outline {
+  background: linear-gradient(135deg, #FFF0F5 0%, #FCE7F3 100%) !important;
+  color: #0F172A !important;
+  border: 1.5px solid #0F172A !important;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(244, 114, 182, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-navy-outline:hover {
+  background: linear-gradient(135deg, #0A1128 0%, #101E3D 100%) !important;
+  color: #FFF0F5 !important;
+  border-color: #F472B6 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(10, 17, 40, 0.3), 0 0 14px rgba(244, 114, 182, 0.35);
+}
+
+/* Light Pink Tinted Button / Pill */
+.btn-pink {
+  background: linear-gradient(135deg, #FFF0F5 0%, #FCE4EC 100%) !important;
+  color: #0F172A !important;
+  font-weight: 700;
+  border: 1.5px solid #F472B6 !important;
+  box-shadow: 0 3px 10px rgba(244, 114, 182, 0.25);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-pink:hover {
+  background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%) !important;
+  border-color: #0F172A !important;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(244, 114, 182, 0.38);
+}
+
+/* Smooth pastel/slate scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFF0F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
