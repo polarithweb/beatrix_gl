@@ -15,6 +15,15 @@
 6. **Temporal & Immutability Invariants**:
    - `createdAt` must equal `request.time` on `create` and is strictly immutable (`incoming().createdAt == existing().createdAt`) on `update`.
    - `updatedAt` must equal `request.time` on `create` and `update`.
+7. **Verified Seller Listing Ownership (`isActiveSeller()`)**:
+   - Only users with an `Active` document in `/sellers/$(request.auth.uid)` (or admins) can create listings or unfeatured catalogue game records.
+   - Non-admin sellers must set `incoming().sellerUid == request.auth.uid` on create and may only update or delete listings where `existing().sellerUid == request.auth.uid`.
+8. **Seller Order Fulfillment & Terminal State Lock**:
+   - Orders with `sellerUid == request.auth.uid` are readable by the assigned seller.
+   - An active seller may only transition an order from `Pending` to `Completed` or `Cancelled`, updating only `['status', 'payoutCredited', 'updatedAt']`. Once an order reaches `Completed` or `Cancelled`, non-admin updates are denied.
+9. **Buyer-Seller Chat Isolation (`/conversations` & `/messages`)**:
+   - Conversation threads are readable and updatable only by their `buyerUid`, `sellerUid`, or `isAdmin()`. Self-chat (`buyerUid == sellerUid`) is forbidden.
+   - Subcollection messages use the Master Gate (`get()` on parent `/conversations/$(conversationId)` on create/get) verifying `incoming().senderUid == request.auth.uid` and participant membership, while `allow list` enforces `resource.data` checks (`buyerUid` or `sellerUid`) with zero `get()` calls.
 
 ---
 

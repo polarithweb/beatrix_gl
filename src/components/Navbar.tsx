@@ -14,6 +14,8 @@ import {
   DollarSign,
   ChevronRight,
   Search,
+  MessageCircle,
+  Store,
 } from 'lucide-react';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { CURRENCIES, CurrencyCode } from '../types';
@@ -32,6 +34,7 @@ export const Navbar: React.FC = () => {
     wallet,
     formatPrice,
     isSeller,
+    conversations,
     filterGameSlug,
     setFilterGameSlug,
     priceFilterMax,
@@ -226,11 +229,11 @@ export const Navbar: React.FC = () => {
                   </div>
                 </div>
                 <Link
-                  to="/become-seller"
+                  to={isSeller ? '/seller' : '/become-seller'}
                   onClick={() => setDrawerOpen(false)}
                   className="mt-4 w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-[#0F172A] font-extrabold text-xs uppercase tracking-wide shadow-md transition-colors"
                 >
-                  <span>{isSeller ? 'View Seller Profile' : 'Become a Seller'}</span>
+                  <span>{isSeller ? 'Open Selling Studio' : 'Become a Seller'}</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -396,6 +399,36 @@ export const Navbar: React.FC = () => {
 
               {/* Section 5: Account & Navigation Links */}
               <div className="space-y-2 pt-2 border-t border-slate-200">
+                <Link
+                  to="/chat"
+                  onClick={() => setDrawerOpen(false)}
+                  className="w-full flex items-center justify-between p-3.5 rounded-xl bg-white hover:bg-[#FFF0F5] border border-pink-200 text-slate-900 text-xs font-bold transition-colors shadow-xs"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <MessageCircle className="w-4 h-4 text-[#0F172A]" />
+                    <span>Buyer &amp; Seller Chat</span>
+                  </div>
+                  {conversations.length > 0 && (
+                    <span className="px-2 py-0.5 rounded-full bg-[#0F172A] text-white text-[11px] font-extrabold">
+                      {conversations.length}
+                    </span>
+                  )}
+                </Link>
+
+                {isSeller && (
+                  <Link
+                    to="/seller"
+                    onClick={() => setDrawerOpen(false)}
+                    className="w-full flex items-center justify-between p-3.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-900 text-xs font-bold transition-colors shadow-xs"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Store className="w-4 h-4 text-emerald-700" />
+                      <span>Selling Studio (List &amp; Withdraw)</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-500" />
+                  </Link>
+                )}
+
                 <Link
                   to="/wallet"
                   onClick={() => setDrawerOpen(false)}

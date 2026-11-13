@@ -16,6 +16,8 @@ import { OrdersPage } from './pages/OrdersPage';
 import { AdminPage } from './pages/AdminPage';
 import { BecomeSellerPage } from './pages/BecomeSellerPage';
 import { WalletPage } from './pages/WalletPage';
+import { SellerDashboardPage } from './pages/SellerDashboardPage';
+import { ChatPage } from './pages/ChatPage';
 
 const ToastContainer: React.FC = () => {
   const { toasts, removeToast } = useMarketplace();
@@ -70,7 +72,7 @@ const AppRoutes: React.FC = () => {
       {/* Global Pink & Light Blue Silk Gradient Backdrop */}
       <div aria-hidden="true" className="fixed inset-0 -z-10 pointer-events-none">
         <img
-          src="/assets/aistudio/IMG_b3686b81-66af-4d69-99aa-0056452b47a4_67782422.jpg"
+          src={`${import.meta.env.BASE_URL}assets/aistudio/IMG_b3686b81-66af-4d69-99aa-0056452b47a4_67782422.jpg`}
           alt=""
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover object-center select-none"
@@ -84,6 +86,8 @@ const AppRoutes: React.FC = () => {
           <Route path="/listing/:id" element={<ListingDetailPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/become-seller" element={<BecomeSellerPage />} />
+          <Route path="/seller" element={<SellerDashboardPage />} />
+          <Route path="/chat" element={<ChatPage />} />
           <Route path="/wallet" element={<WalletPage />} />
           <Route path="/admin" element={<AdminPage />} />
         </Routes>

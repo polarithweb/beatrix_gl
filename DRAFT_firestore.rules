@@ -39,6 +39,12 @@ service cloud.firestore {
       );
     }
 
+    function isActiveSeller() {
+      return isVerifiedUser() &&
+        exists(/databases/$(database)/documents/sellers/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/sellers/$(request.auth.uid)).data.status == 'Active';
+    }
+
     // Validation Blueprint 1: SiteSettings
     function isValidSiteSettings(data) {
       return data.keys().hasAll([
@@ -114,7 +120,7 @@ service cloud.firestore {
       data.keys().hasOnly([
         'gameId', 'gameSlug', 'gameTitle', 'categoryId', 'categoryName',
         'title', 'description', 'price', 'stock', 'deliverySpeed',
-        'sellerName', 'sellerRating', 'imageUrl', 'active', 'createdAt', 'updatedAt'
+        'sellerName', 'sellerRating', 'imageUrl', 'active', 'sellerUid', 'createdAt', 'updatedAt'
       ]) &&
       isValidId(data.gameId) &&
       data.gameSlug is string && data.gameSlug.size() >= 1 && data.gameSlug.size() <= 100 &&
@@ -130,6 +136,7 @@ service cloud.firestore {
       data.sellerRating is number && data.sellerRating >= 0 && data.sellerRating <= 5 &&
       data.imageUrl is string && data.imageUrl.size() <= 600000 &&
       data.active is bool &&
+      (!('sellerUid' in data) || (data.sellerUid is string && data.sellerUid.size() <= 128)) &&
       data.createdAt is timestamp &&
       data.updatedAt == request.time;
     }
@@ -144,7 +151,8 @@ service cloud.firestore {
       data.keys().hasOnly([
         'listingId', 'listingTitle', 'gameTitle', 'categoryName', 'sellerName',
         'quantity', 'unitPrice', 'totalPrice', 'buyerUid', 'buyerEmail',
-        'buyerName', 'deliveryInstructions', 'status', 'createdAt', 'updatedAt'
+        'buyerName', 'deliveryInstructions', 'status', 'sellerUid', 'payoutCredited',
+        'createdAt', 'updatedAt'
       ]) &&
       isValidId(data.listingId) &&
       data.listingTitle is string && data.listingTitle.size() >= 1 && data.listingTitle.size() <= 140 &&
@@ -159,6 +167,8 @@ service cloud.firestore {
       data.buyerName is string && data.buyerName.size() >= 1 && data.buyerName.size() <= 100 &&
       data.deliveryInstructions is string && data.deliveryInstructions.size() >= 1 && data.deliveryInstructions.size() <= 500 &&
       data.status in ['Pending', 'Completed', 'Cancelled'] &&
+      (!('sellerUid' in data) || (data.sellerUid is string && data.sellerUid.size() <= 128)) &&
+      (!('payoutCredited' in data) || data.payoutCredited is bool) &&
       data.createdAt is timestamp &&
       data.updatedAt == request.time;
     }
@@ -172,6 +182,102 @@ service cloud.firestore {
       data.email is string && data.email.size() >= 3 && data.email.size() <= 160 &&
       data.grantToken is string && data.grantToken.size() == 25 &&
       data.grantToken == 'POLARITH_ADMIN_8825_GRANT' &&
+      data.createdAt == request.time;
+    }
+
+    // Validation Blueprint 7: SellerApplication
+    function isValidSellerApplication(data) {
+      return data.keys().hasAll([
+        'userId', 'userEmail', 'fullName', 'address', 'phoneNumber',
+        'whatsappNumber', 'nationalIdUrl', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'userId', 'userEmail', 'fullName', 'address', 'phoneNumber',
+        'whatsappNumber', 'nationalIdUrl', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.userId) &&
+      data.userEmail is string && data.userEmail.size() >= 3 && data.userEmail.size() <= 160 &&
+      data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120 &&
+      data.address is string && data.address.size() >= 5 && data.address.size() <= 400 &&
+      data.phoneNumber is string && data.phoneNumber.size() >= 5 && data.phoneNumber.size() <= 30 &&
+      data.whatsappNumber is string && data.whatsappNumber.size() >= 5 && data.whatsappNumber.size() <= 30 &&
+      data.nationalIdUrl is string && data.nationalIdUrl.size() <= 600000 &&
+      data.status in ['Pending', 'Approved', 'Rejected', 'Banned'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 8: Seller
+    function isValidSeller(data) {
+      return data.keys().hasAll(['userId', 'userEmail', 'fullName', 'status', 'createdAt', 'updatedAt']) &&
+      isValidId(data.userId) &&
+      data.userEmail is string && data.userEmail.size() >= 3 && data.userEmail.size() <= 160 &&
+      data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120 &&
+      data.status in ['Active', 'Banned'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 9: Wallet
+    function isValidWallet(data) {
+      return data.keys().hasAll(['userId', 'balanceInr', 'updatedAt']) &&
+      data.keys().hasOnly(['userId', 'balanceInr', 'updatedAt']) &&
+      isValidId(data.userId) &&
+      data.balanceInr is number && data.balanceInr >= 0 &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 10: WalletTransaction
+    function isValidWalletTransaction(data) {
+      return data.keys().hasAll(['userId', 'type', 'amountInr', 'description', 'status', 'createdAt']) &&
+      isValidId(data.userId) &&
+      data.type in ['Deposit', 'Purchase', 'Sale', 'Withdrawal'] &&
+      data.amountInr is number && data.amountInr > 0 &&
+      data.description is string && data.description.size() <= 300 &&
+      data.status in ['Completed', 'Pending', 'Rejected'] &&
+      data.createdAt is timestamp;
+    }
+
+    // Validation Blueprint 11: Conversation
+    function isValidConversation(data) {
+      return data.keys().hasAll([
+        'buyerUid', 'sellerUid', 'buyerName', 'sellerName',
+        'listingId', 'listingTitle', 'lastMessage', 'lastSenderUid',
+        'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'buyerUid', 'sellerUid', 'buyerName', 'sellerName',
+        'listingId', 'listingTitle', 'lastMessage', 'lastSenderUid',
+        'createdAt', 'updatedAt'
+      ]) &&
+      isValidId(data.buyerUid) &&
+      isValidId(data.sellerUid) &&
+      data.buyerUid != data.sellerUid &&
+      data.buyerName is string && data.buyerName.size() >= 1 && data.buyerName.size() <= 100 &&
+      data.sellerName is string && data.sellerName.size() >= 1 && data.sellerName.size() <= 60 &&
+      data.listingId is string && data.listingId.size() <= 128 &&
+      data.listingTitle is string && data.listingTitle.size() <= 140 &&
+      data.lastMessage is string && data.lastMessage.size() <= 500 &&
+      data.lastSenderUid is string && data.lastSenderUid.size() <= 128 &&
+      data.createdAt is timestamp &&
+      data.updatedAt == request.time;
+    }
+
+    // Validation Blueprint 12: ChatMessage
+    function isValidChatMessage(data) {
+      return data.keys().hasAll([
+        'conversationId', 'buyerUid', 'sellerUid', 'senderUid', 'senderName', 'text', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'conversationId', 'buyerUid', 'sellerUid', 'senderUid', 'senderName', 'text', 'createdAt'
+      ]) &&
+      isValidId(data.conversationId) &&
+      isValidId(data.buyerUid) &&
+      isValidId(data.sellerUid) &&
+      data.buyerUid != data.sellerUid &&
+      isValidId(data.senderUid) &&
+      data.senderName is string && data.senderName.size() >= 1 && data.senderName.size() <= 100 &&
+      data.text is string && data.text.size() >= 1 && data.text.size() <= 1000 &&
       data.createdAt == request.time;
     }
 
@@ -205,11 +311,14 @@ service cloud.firestore {
       allow delete: if isVerifiedUser() && isValidId(categoryId) && isAdmin();
     }
 
-    // Collection 3: games (Public Read, Admin Write)
+    // Collection 3: games (Public Read, Admin Write + Active Seller Unfeatured Catalogue Provisioning)
     match /games/{gameId} {
       allow get: if isValidId(gameId);
       allow list: if true;
-      allow create: if isVerifiedUser() && isValidId(gameId) && isValidGame(incoming()) && incoming().createdAt == request.time && isAdmin();
+      allow create: if isVerifiedUser() && isValidId(gameId) && isValidGame(incoming()) && incoming().createdAt == request.time && (
+        isAdmin() ||
+        (isActiveSeller() && incoming().featured == false)
+      );
       allow update: if isVerifiedUser() && isValidId(gameId) && isValidGame(incoming()) && incoming().createdAt == existing().createdAt && (
         (incoming().diff(existing()).affectedKeys().hasOnly([
           'title', 'slug', 'iconUrl', 'bannerUrl', 'featured', 'categoryIds', 'updatedAt'
@@ -219,7 +328,7 @@ service cloud.firestore {
       allow delete: if isVerifiedUser() && isValidId(gameId) && isAdmin();
     }
 
-    // Collection 4: listings (Public Read, Admin Write + Relational Existence Check)
+    // Collection 4: listings (Public Read, Verified Seller Own Listings & Admin Full Management)
     match /listings/{listingId} {
       allow get: if isValidId(listingId);
       allow list: if true;
@@ -227,9 +336,11 @@ service cloud.firestore {
         isValidId(listingId) &&
         isValidListing(incoming()) &&
         incoming().createdAt == request.time &&
-        isAdmin() &&
         exists(/databases/$(database)/documents/games/$(incoming().gameId)) &&
-        exists(/databases/$(database)/documents/categories/$(incoming().categoryId));
+        exists(/databases/$(database)/documents/categories/$(incoming().categoryId)) && (
+          isAdmin() ||
+          (isActiveSeller() && ('sellerUid' in incoming()) && incoming().sellerUid == request.auth.uid)
+        );
       allow update: if isVerifiedUser() &&
         isValidId(listingId) &&
         isValidListing(incoming()) &&
@@ -240,21 +351,42 @@ service cloud.firestore {
            incoming().categoryId == existing().categoryId &&
            incoming().stock <= existing().stock &&
            incoming().stock >= 0) ||
-          // Action 2: Admin full listing management
-          (incoming().diff(existing()).affectedKeys().hasOnly([
-            'gameId', 'gameSlug', 'gameTitle', 'categoryId', 'categoryName',
-            'title', 'description', 'price', 'stock', 'deliverySpeed',
-            'sellerName', 'sellerRating', 'imageUrl', 'active', 'updatedAt'
-          ]) && isAdmin()) ||
+          // Action 2: Verified seller full management of their own listing
+          (isActiveSeller() &&
+           ('sellerUid' in existing()) &&
+           existing().sellerUid == request.auth.uid &&
+           ('sellerUid' in incoming()) &&
+           incoming().sellerUid == existing().sellerUid &&
+           incoming().diff(existing()).affectedKeys().hasOnly([
+             'gameId', 'gameSlug', 'gameTitle', 'categoryId', 'categoryName',
+             'title', 'description', 'price', 'stock', 'deliverySpeed',
+             'sellerName', 'sellerRating', 'imageUrl', 'active', 'updatedAt'
+           ])) ||
+          // Action 3: Admin full listing management
           isAdmin()
         );
-      allow delete: if isVerifiedUser() && isValidId(listingId) && isAdmin();
+      allow delete: if isVerifiedUser() && isValidId(listingId) && (
+        isAdmin() ||
+        (isActiveSeller() && resource != null && ('sellerUid' in resource.data) && resource.data.sellerUid == request.auth.uid)
+      );
     }
 
-    // Collection 5: orders (PII Isolated to Buyer Owner or Admin; Validated Create)
+    // Collection 5: orders (PII Isolated to Buyer, Assigned Seller, or Admin)
     match /orders/{orderId} {
-      allow get: if isVerifiedUser() && isValidId(orderId) && (existing().buyerUid == request.auth.uid || isAdmin());
-      allow list: if isVerifiedUser() && (existing().buyerUid == request.auth.uid || isAdmin());
+      allow get: if isVerifiedUser() && isValidId(orderId) && (
+        (resource != null && (
+          resource.data.buyerUid == request.auth.uid ||
+          ('sellerUid' in resource.data && resource.data.sellerUid == request.auth.uid)
+        )) ||
+        isAdmin()
+      );
+      allow list: if isVerifiedUser() && (
+        isAdmin() ||
+        (resource != null && (
+          resource.data.buyerUid == request.auth.uid ||
+          resource.data.sellerUid == request.auth.uid
+        ))
+      );
       allow create: if isVerifiedUser() &&
         isValidId(orderId) &&
         isValidOrder(incoming()) &&
@@ -273,9 +405,14 @@ service cloud.firestore {
            existing().status == 'Pending' &&
            incoming().status == 'Cancelled' &&
            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])) ||
-          // Action 2: Admin status transition override
-          (isAdmin() &&
-           incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])) ||
+          // Action 2: Assigned verified seller order fulfillment / cancellation
+          (isActiveSeller() &&
+           ('sellerUid' in existing()) &&
+           existing().sellerUid == request.auth.uid &&
+           existing().status == 'Pending' &&
+           incoming().status in ['Completed', 'Cancelled'] &&
+           incoming().diff(existing()).affectedKeys().hasOnly(['status', 'payoutCredited', 'updatedAt'])) ||
+          // Action 3: Admin status transition override
           isAdmin()
         );
       allow delete: if isVerifiedUser() && isValidId(orderId) && isAdmin();
@@ -284,10 +421,157 @@ service cloud.firestore {
     // Collection 6: admins (Verified Admin Session Registry)
     match /admins/{adminId} {
       allow get: if isVerifiedUser() && isValidId(adminId) && (request.auth.uid == adminId || isBootstrappedAdmin());
-      allow list: if isBootstrappedAdmin() && existing().uid is string;
+      allow list: if isBootstrappedAdmin() && (resource != null && resource.data.uid is string);
       allow create: if isVerifiedUser() && isValidId(adminId) && request.auth.uid == adminId && isValidAdminGrant(incoming());
       allow update: if isVerifiedUser() && isValidId(adminId) && isValidAdminGrant(incoming()) && incoming().createdAt == existing().createdAt && isBootstrappedAdmin();
       allow delete: if isVerifiedUser() && isValidId(adminId) && (request.auth.uid == adminId || isBootstrappedAdmin());
+    }
+
+    // Collection 7: sellerApplications (Applicant submits & views own, Admin reviews)
+    match /sellerApplications/{appId} {
+      allow get: if isVerifiedUser() && isValidId(appId) && (
+        request.auth.uid == appId ||
+        (resource != null && resource.data.userId == request.auth.uid) ||
+        isAdmin()
+      );
+      allow list: if isVerifiedUser() && (
+        isAdmin() ||
+        (resource != null && resource.data.userId == request.auth.uid)
+      );
+      allow create: if isVerifiedUser() &&
+        isValidId(appId) &&
+        request.auth.uid == appId &&
+        isValidSellerApplication(incoming()) &&
+        incoming().userId == request.auth.uid &&
+        incoming().status == 'Pending' &&
+        incoming().createdAt == request.time;
+      allow update: if isVerifiedUser() &&
+        isValidId(appId) &&
+        isValidSellerApplication(incoming()) &&
+        incoming().userId == existing().userId &&
+        incoming().createdAt == existing().createdAt &&
+        isAdmin();
+      allow delete: if isVerifiedUser() && isValidId(appId) && isAdmin();
+    }
+
+    // Collection 8: sellers (Public Read for reputation/badge, Admin Write for approve/ban)
+    match /sellers/{sellerId} {
+      allow get: if isValidId(sellerId);
+      allow list: if true;
+      allow create: if isVerifiedUser() && isValidId(sellerId) && isValidSeller(incoming()) && incoming().createdAt == request.time && isAdmin();
+      allow update: if isVerifiedUser() && isValidId(sellerId) && isValidSeller(incoming()) && incoming().createdAt == existing().createdAt && incoming().userId == existing().userId && isAdmin();
+      allow delete: if isVerifiedUser() && isValidId(sellerId) && isAdmin();
+    }
+
+    // Collection 9: wallets (User views/updates own wallet balance, Admin manages)
+    match /wallets/{walletId} {
+      allow get: if isVerifiedUser() && isValidId(walletId) && (
+        request.auth.uid == walletId ||
+        (resource != null && resource.data.userId == request.auth.uid) ||
+        isAdmin()
+      );
+      allow list: if isVerifiedUser() && isAdmin();
+      allow create: if isVerifiedUser() &&
+        isValidId(walletId) &&
+        request.auth.uid == walletId &&
+        isValidWallet(incoming()) &&
+        incoming().userId == request.auth.uid &&
+        incoming().balanceInr >= 0 &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser() &&
+        isValidId(walletId) &&
+        isValidWallet(incoming()) &&
+        (request.auth.uid == walletId || (resource != null && resource.data.userId == request.auth.uid)) &&
+        incoming().userId == request.auth.uid &&
+        incoming().balanceInr >= 0 &&
+        incoming().updatedAt == request.time;
+      allow delete: if isVerifiedUser() && isValidId(walletId) && isAdmin();
+    }
+
+    // Collection 10: walletTransactions (User creates and reads own transactions, Admin manages)
+    match /walletTransactions/{txId} {
+      allow get: if isVerifiedUser() && isValidId(txId) && (
+        (resource != null && resource.data.userId == request.auth.uid) ||
+        isAdmin()
+      );
+      allow list: if isVerifiedUser() && (
+        (resource != null && resource.data.userId == request.auth.uid) ||
+        isAdmin()
+      );
+      allow create: if isVerifiedUser() &&
+        isValidId(txId) &&
+        isValidWalletTransaction(incoming()) &&
+        incoming().userId == request.auth.uid &&
+        incoming().createdAt == request.time;
+      allow update: if isVerifiedUser() && isValidId(txId) && isAdmin();
+      allow delete: if isVerifiedUser() && isValidId(txId) && isAdmin();
+    }
+
+    // Collection 11: conversations (Strict Buyer/Seller Participant Isolation)
+    match /conversations/{conversationId} {
+      allow get: if isVerifiedUser() && isValidId(conversationId) && (
+        isAdmin() ||
+        (resource != null && (
+          resource.data.buyerUid == request.auth.uid ||
+          resource.data.sellerUid == request.auth.uid
+        ))
+      );
+      allow list: if isVerifiedUser() && (
+        isAdmin() ||
+        (resource != null && (
+          resource.data.buyerUid == request.auth.uid ||
+          resource.data.sellerUid == request.auth.uid
+        ))
+      );
+      allow create: if isVerifiedUser() &&
+        isValidId(conversationId) &&
+        isValidConversation(incoming()) &&
+        (incoming().buyerUid == request.auth.uid || incoming().sellerUid == request.auth.uid) &&
+        incoming().createdAt == request.time;
+      allow update: if isVerifiedUser() &&
+        isValidId(conversationId) &&
+        isValidConversation(incoming()) &&
+        incoming().buyerUid == existing().buyerUid &&
+        incoming().sellerUid == existing().sellerUid &&
+        incoming().createdAt == existing().createdAt && (
+          ((request.auth.uid == existing().buyerUid || request.auth.uid == existing().sellerUid) &&
+           incoming().diff(existing()).affectedKeys().hasOnly([
+             'lastMessage', 'lastSenderUid', 'listingId', 'listingTitle', 'updatedAt'
+           ])) ||
+          isAdmin()
+        );
+      allow delete: if isVerifiedUser() && isValidId(conversationId) && isAdmin();
+
+      // Subcollection: messages (Master Gate on create/get; zero get() in allow list)
+      match /messages/{messageId} {
+        allow get: if isVerifiedUser() &&
+          isValidId(conversationId) &&
+          isValidId(messageId) && (
+            isAdmin() ||
+            get(/databases/$(database)/documents/conversations/$(conversationId)).data.buyerUid == request.auth.uid ||
+            get(/databases/$(database)/documents/conversations/$(conversationId)).data.sellerUid == request.auth.uid
+          );
+        allow list: if isVerifiedUser() && (
+          isAdmin() ||
+          (resource != null && (
+            resource.data.buyerUid == request.auth.uid ||
+            resource.data.sellerUid == request.auth.uid
+          ))
+        );
+        allow create: if isVerifiedUser() &&
+          isValidId(conversationId) &&
+          isValidId(messageId) &&
+          isValidChatMessage(incoming()) &&
+          incoming().conversationId == conversationId &&
+          incoming().senderUid == request.auth.uid &&
+          incoming().createdAt == request.time &&
+          exists(/databases/$(database)/documents/conversations/$(conversationId)) &&
+          incoming().buyerUid == get(/databases/$(database)/documents/conversations/$(conversationId)).data.buyerUid &&
+          incoming().sellerUid == get(/databases/$(database)/documents/conversations/$(conversationId)).data.sellerUid &&
+          (request.auth.uid == incoming().buyerUid || request.auth.uid == incoming().sellerUid);
+        allow update: if false;
+        allow delete: if isVerifiedUser() && isValidId(conversationId) && isValidId(messageId) && isAdmin();
+      }
     }
   }
 }

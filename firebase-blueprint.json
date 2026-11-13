@@ -275,6 +275,11 @@
           "type": "boolean",
           "description": "Whether the offer is active and visible on the public marketplace."
         },
+        "sellerUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the seller or admin who created the listing.",
+          "maxLength": 128
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time",
@@ -382,6 +387,15 @@
           "type": "string",
           "description": "Order fulfillment status.",
           "enum": ["Pending", "Completed", "Cancelled"]
+        },
+        "sellerUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the seller fulfilling this order.",
+          "maxLength": 128
+        },
+        "payoutCredited": {
+          "type": "boolean",
+          "description": "Whether the seller wallet payout has been credited upon completion."
         },
         "createdAt": {
           "type": "string",
@@ -667,6 +681,142 @@
         "status",
         "createdAt"
       ]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Direct real-time chat thread between a buyer and a seller.",
+      "type": "object",
+      "properties": {
+        "buyerUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the buyer participant.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "sellerUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the seller participant.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "buyerName": {
+          "type": "string",
+          "description": "Display name of the buyer.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "sellerName": {
+          "type": "string",
+          "description": "Display name of the seller.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "listingId": {
+          "type": "string",
+          "description": "Optional related listing document ID.",
+          "maxLength": 128
+        },
+        "listingTitle": {
+          "type": "string",
+          "description": "Optional related listing title for context.",
+          "maxLength": 140
+        },
+        "lastMessage": {
+          "type": "string",
+          "description": "Preview of the most recent message in the thread.",
+          "maxLength": 500
+        },
+        "lastSenderUid": {
+          "type": "string",
+          "description": "UID of the user who sent the latest message.",
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last message server timestamp."
+        }
+      },
+      "required": [
+        "buyerUid",
+        "sellerUid",
+        "buyerName",
+        "sellerName",
+        "listingId",
+        "listingTitle",
+        "lastMessage",
+        "lastSenderUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Individual message inside a buyer-seller conversation.",
+      "type": "object",
+      "properties": {
+        "conversationId": {
+          "type": "string",
+          "description": "Parent conversation document ID.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "buyerUid": {
+          "type": "string",
+          "description": "Buyer UID copied from parent conversation for query isolation.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "sellerUid": {
+          "type": "string",
+          "description": "Seller UID copied from parent conversation for query isolation.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "senderUid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the message author.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "senderName": {
+          "type": "string",
+          "description": "Display name of the message author.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "text": {
+          "type": "string",
+          "description": "Plain-text chat message content.",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp."
+        }
+      },
+      "required": [
+        "conversationId",
+        "buyerUid",
+        "sellerUid",
+        "senderUid",
+        "senderName",
+        "text",
+        "createdAt"
+      ]
     }
   },
   "firestore": {
@@ -709,6 +859,14 @@
     "/walletTransactions/{txId}": {
       "schema": { "$ref": "#/entities/WalletTransaction" },
       "description": "Wallet transaction audit logs for deposits, purchases, sales, and withdrawals."
+    },
+    "/conversations/{conversationId}": {
+      "schema": { "$ref": "#/entities/Conversation" },
+      "description": "Buyer-to-seller direct messaging threads."
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Real-time chat messages inside a buyer-seller conversation."
     }
   }
 }

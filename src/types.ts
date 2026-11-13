@@ -54,6 +54,7 @@ export interface Listing {
   sellerRating: number;
   imageUrl: string;
   active: boolean;
+  sellerUid?: string;
   createdAt?: Timestamp | null;
   updatedAt?: Timestamp | null;
 }
@@ -75,6 +76,8 @@ export interface Order {
   buyerName: string;
   deliveryInstructions: string;
   status: OrderStatus;
+  sellerUid?: string;
+  payoutCredited?: boolean;
   createdAt?: Timestamp | null;
   updatedAt?: Timestamp | null;
 }
@@ -158,6 +161,31 @@ export interface WalletTransaction {
   createdAt?: Timestamp | null;
 }
 
+export interface Conversation {
+  id: string;
+  buyerUid: string;
+  sellerUid: string;
+  buyerName: string;
+  sellerName: string;
+  listingId: string;
+  listingTitle: string;
+  lastMessage: string;
+  lastSenderUid: string;
+  createdAt?: Timestamp | null;
+  updatedAt?: Timestamp | null;
+}
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  buyerUid: string;
+  sellerUid: string;
+  senderUid: string;
+  senderName: string;
+  text: string;
+  createdAt?: Timestamp | null;
+}
+
 // Blueprint-synchronized validation constants
 export const FIELD_LIMITS = {
   SITE_NAME_MAX: 80,
@@ -175,6 +203,8 @@ export const FIELD_LIMITS = {
   DELIVERY_SPEED_MAX: 40,
   SELLER_NAME_MAX: 60,
   ORDER_INSTRUCTIONS_MAX: 500,
+  CHAT_MESSAGE_MAX: 1000,
+  CONVERSATION_PREVIEW_MAX: 500,
   MAX_ARRAY_ITEMS: 10,
 } as const;
 

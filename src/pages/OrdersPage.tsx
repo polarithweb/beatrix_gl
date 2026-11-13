@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   ShoppingBag,
   Search,
@@ -8,12 +8,22 @@ import {
   Clock,
   XCircle,
   ArrowRight,
+  MessageCircle,
 } from 'lucide-react';
 import { useMarketplace } from '../context/MarketplaceContext';
 
 export const OrdersPage: React.FC = () => {
-  const { user, signInWithGoogle, orders, formatPrice, updateOrderStatus } =
-    useMarketplace();
+  const navigate = useNavigate();
+  const {
+    user,
+    signInWithGoogle,
+    orders,
+    allSellers,
+    formatPrice,
+    updateOrderStatus,
+    startOrOpenConversation,
+    addToast,
+  } = useMarketplace();
 
   const [orderSearch, setOrderSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | 'Pending' | 'Completed' | 'Cancelled'>(
@@ -170,7 +180,43 @@ export const OrdersPage: React.FC = () => {
                     {formatPrice(order.totalPrice)}
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {(order.sellerUid ||
+                      allSellers.some(
+                        (s) => s.fullName.toLowerCase() === order.sellerName.toLowerCase()
+                      )) && (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const targetSellerUid =
+                            order.sellerUid ||
+                            allSellers.find(
+                              (s) => s.fullName.toLowerCase() === order.sellerName.toLowerCase()
+                            )?.userId ||
+                            '';
+                          if (!targetSellerUid) return;
+                          try {
+                            const convId = await startOrOpenConversation({
+                              sellerUid: targetSellerUid,
+                              sellerName: order.sellerName,
+                              listingId: order.listingId,
+                              listingTitle: order.listingTitle,
+                            });
+                            navigate(`/chat?conversationId=${encodeURIComponent(convId)}`);
+                          } catch (err: unknown) {
+                            addToast(
+                              err instanceof Error ? err.message : 'Unable to open chat.',
+                              'error'
+                            );
+                          }
+                        }}
+                        className="btn-pink px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1.5"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>Chat with Seller</span>
+                      </button>
+                    )}
+
                     {order.status === 'Completed' && (
                       <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-300">
                         <CheckCircle2 className="w-4 h-4 text-emerald-700" />

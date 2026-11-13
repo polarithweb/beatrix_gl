@@ -13,8 +13,9 @@ import {
   FileText,
   Wallet as WalletIcon,
   Sparkles,
-  ArrowRight,
   X,
+  Store,
+  MessageCircle,
 } from 'lucide-react';
 import { useMarketplace } from '../context/MarketplaceContext';
 import { compressImageToDataUrl } from '../types';
@@ -144,18 +145,25 @@ export const BecomeSellerPage: React.FC = () => {
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
-              to="/wallet"
+              to="/seller"
               className="btn-navy inline-flex items-center gap-2 px-6 py-3 rounded-full text-white font-bold text-sm shadow-md transition-all"
             >
-              <WalletIcon className="w-4 h-4" />
-              <span>Go to My Wallet</span>
+              <Store className="w-4 h-4" />
+              <span>Open Selling Studio</span>
             </Link>
             <Link
-              to="/"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full neu-flat text-slate-800 hover:text-[#0F172A] font-bold text-sm transition-colors border border-slate-300"
+              to="/wallet"
+              className="btn-navy-outline inline-flex items-center gap-2 px-6 py-3 rounded-full font-bold text-sm transition-all"
             >
-              <span>Explore Marketplace</span>
-              <ArrowRight className="w-4 h-4" />
+              <WalletIcon className="w-4 h-4" />
+              <span>Wallet &amp; Withdraw</span>
+            </Link>
+            <Link
+              to="/chat"
+              className="btn-pink inline-flex items-center gap-2 px-5 py-3 rounded-full font-bold text-sm transition-all"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>Buyer Chat</span>
             </Link>
           </div>
         </div>

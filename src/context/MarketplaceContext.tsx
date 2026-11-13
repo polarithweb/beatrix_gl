@@ -41,6 +41,7 @@ import {
   Seller,
   Wallet,
   WalletTransaction,
+  Conversation,
   MIN_WITHDRAWAL_INR,
   getMinWithdrawalInCurrency,
   sanitizeText,
@@ -118,6 +119,23 @@ interface MarketplaceContextValue {
   depositToWallet: (amountInr: number, description?: string) => Promise<void>;
   withdrawFromWallet: (amountInr: number, payoutDetails: string) => Promise<void>;
 
+  // Seller Orders & Fulfillment
+  sellerOrders: Order[];
+  completeSellerOrder: (order: Order) => Promise<void>;
+  cancelSellerOrder: (order: Order) => Promise<void>;
+
+  // Buyer-Seller Real-Time Chat
+  conversations: Conversation[];
+  startOrOpenConversation: (input: {
+    buyerUid?: string;
+    buyerName?: string;
+    sellerUid: string;
+    sellerName: string;
+    listingId?: string;
+    listingTitle?: string;
+  }) => Promise<string>;
+  sendChatMessage: (conversation: Conversation, text: string) => Promise<void>;
+
   // Toasts
   toasts: ToastMessage[];
   addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
@@ -166,13 +184,15 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [listings, setListings] = useState<Listing[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Seller & Wallet states
+  // Seller, Wallet & Chat states
   const [sellerRecord, setSellerRecord] = useState<Seller | null>(null);
   const [sellerApplication, setSellerApplication] = useState<SellerApplication | null>(null);
   const [allSellerApplications, setAllSellerApplications] = useState<SellerApplication[]>([]);
   const [allSellers, setAllSellers] = useState<Seller[]>([]);
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [walletTransactions, setWalletTransactions] = useState<WalletTransaction[]>([]);
+  const [sellerOrders, setSellerOrders] = useState<Order[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
 
   const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
@@ -269,6 +289,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setSellerApplication(null);
       setWallet(null);
       setWalletTransactions([]);
+      setSellerOrders([]);
+      setConversations([]);
       addToast('Signed out successfully.', 'info');
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : 'Failed to sign out';
@@ -423,6 +445,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setWallet(null);
       setWalletTransactions([]);
       setOrders([]);
+      setSellerOrders([]);
+      setConversations([]);
       return;
     }
 
@@ -536,14 +560,100 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     );
 
+    // 6. Buyer & Seller Real-Time Chat Conversations
+    const buyerConvsMap = new Map<string, Conversation>();
+    const sellerConvsMap = new Map<string, Conversation>();
+
+    const syncMergedConversations = () => {
+      const merged = new Map<string, Conversation>();
+      buyerConvsMap.forEach((v, k) => merged.set(k, v));
+      sellerConvsMap.forEach((v, k) => merged.set(k, v));
+      const sorted = Array.from(merged.values()).sort((a, b) => {
+        const tA = a.updatedAt?.toMillis?.() || a.createdAt?.toMillis?.() || 0;
+        const tB = b.updatedAt?.toMillis?.() || b.createdAt?.toMillis?.() || 0;
+        return tB - tA;
+      });
+      setConversations(sorted);
+    };
+
+    const buyerConvsQuery = query(
+      collection(db, 'conversations'),
+      where('buyerUid', '==', user.uid)
+    );
+    const unsubBuyerConvs = onSnapshot(
+      buyerConvsQuery,
+      (snap) => {
+        buyerConvsMap.clear();
+        snap.docs.forEach((d) => {
+          buyerConvsMap.set(d.id, { id: d.id, ...(d.data() as Omit<Conversation, 'id'>) });
+        });
+        syncMergedConversations();
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.LIST, 'conversations');
+      }
+    );
+
+    const sellerConvsQuery = query(
+      collection(db, 'conversations'),
+      where('sellerUid', '==', user.uid)
+    );
+    const unsubSellerConvs = onSnapshot(
+      sellerConvsQuery,
+      (snap) => {
+        sellerConvsMap.clear();
+        snap.docs.forEach((d) => {
+          sellerConvsMap.set(d.id, { id: d.id, ...(d.data() as Omit<Conversation, 'id'>) });
+        });
+        syncMergedConversations();
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.LIST, 'conversations');
+      }
+    );
+
     return () => {
       unsubSellerDoc();
       unsubAppDoc();
       unsubWallet();
       unsubTx();
       unsubOrders();
+      unsubBuyerConvs();
+      unsubSellerConvs();
     };
   }, [authReady, user, isAdminAuthorized]);
+
+  // Seller-scoped listener: Orders received by this verified seller
+  useEffect(() => {
+    if (!authReady || !user || !user.emailVerified || !sellerRecord || sellerRecord.status !== 'Active') {
+      setSellerOrders([]);
+      return;
+    }
+
+    const sellerOrdersQuery = query(
+      collection(db, 'orders'),
+      where('sellerUid', '==', user.uid)
+    );
+    const unsubSellerOrders = onSnapshot(
+      sellerOrdersQuery,
+      (snap) => {
+        const items: Order[] = snap.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as Omit<Order, 'id'>),
+        }));
+        items.sort((a, b) => {
+          const tA = a.createdAt?.toMillis?.() || 0;
+          const tB = b.createdAt?.toMillis?.() || 0;
+          return tB - tA;
+        });
+        setSellerOrders(items);
+      },
+      (error) => {
+        handleFirestoreError(error, OperationType.LIST, 'orders');
+      }
+    );
+    return () => unsubSellerOrders();
+  }, [authReady, user, sellerRecord]);
 
   // Admin-scoped listener: All Seller Applications
   useEffect(() => {
@@ -1046,6 +1156,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
 
       try {
+        const resolvedSellerUid = sanitizeText(input.sellerUid || user?.uid || '', 128);
         await addDoc(collection(db, 'listings'), {
           gameId: sanitizeText(input.gameId, 128),
           gameSlug: sanitizeSlug(input.gameSlug, 100),
@@ -1061,6 +1172,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
           sellerRating: Math.round(sellerRating * 10) / 10,
           imageUrl: input.imageUrl.trim().slice(0, FIELD_LIMITS.IMAGE_URL_MAX),
           active: Boolean(input.active),
+          ...(resolvedSellerUid ? { sellerUid: resolvedSellerUid } : {}),
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
@@ -1069,7 +1181,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         handleFirestoreError(error, OperationType.CREATE, 'listings');
       }
     },
-    [addToast]
+    [user, addToast]
   );
 
   const updateListing = useCallback(
@@ -1168,6 +1280,11 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
       }
 
+      const resolvedSellerUid =
+        input.listing.sellerUid ||
+        allSellers.find((s) => s.fullName.toLowerCase() === input.listing.sellerName.toLowerCase())?.userId ||
+        '';
+
       try {
         const docRef = await addDoc(collection(db, 'orders'), {
           listingId: input.listing.id,
@@ -1183,6 +1300,8 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
           buyerName: sanitizeText(user.displayName || user.email.split('@')[0], 100),
           deliveryInstructions: instructions,
           status: 'Pending',
+          ...(resolvedSellerUid ? { sellerUid: sanitizeText(resolvedSellerUid, 128) } : {}),
+          payoutCredited: false,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
@@ -1218,7 +1337,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         handleFirestoreError(error, OperationType.CREATE, 'orders');
       }
     },
-    [user, wallet, addToast]
+    [user, wallet, allSellers, addToast]
   );
 
   const updateOrderStatus = useCallback(
@@ -1234,6 +1353,195 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     },
     [addToast]
+  );
+
+  const completeSellerOrder = useCallback(
+    async (order: Order) => {
+      if (!user || !isSeller) {
+        throw new Error('Verified active seller access required.');
+      }
+      if (order.sellerUid !== user.uid) {
+        throw new Error('You can only fulfill orders assigned to your seller account.');
+      }
+      if (order.status !== 'Pending') {
+        throw new Error('Only pending orders can be completed.');
+      }
+
+      const payoutInr = Math.round((Number(order.totalPrice) || 0) * CURRENCIES.INR.rate);
+
+      try {
+        await updateDoc(doc(db, 'orders', order.id), {
+          status: 'Completed',
+          payoutCredited: true,
+          updatedAt: serverTimestamp(),
+        });
+
+        if (!order.payoutCredited && payoutInr > 0) {
+          const currentBalance = wallet?.balanceInr || 0;
+          await setDoc(doc(db, 'wallets', user.uid), {
+            userId: user.uid,
+            balanceInr: currentBalance + payoutInr,
+            updatedAt: serverTimestamp(),
+          });
+          await addDoc(collection(db, 'walletTransactions'), {
+            userId: user.uid,
+            type: 'Sale',
+            amountInr: payoutInr,
+            description: sanitizeText(
+              `Sale payout: Order #${order.id.slice(0, 8).toUpperCase()} (${order.listingTitle} x${order.quantity})`,
+              300
+            ),
+            status: 'Completed',
+            createdAt: serverTimestamp(),
+          });
+          addToast(
+            `Order #${order.id.slice(0, 8).toUpperCase()} completed! ₹${payoutInr.toLocaleString()} INR credited to your wallet.`,
+            'success'
+          );
+        } else {
+          addToast(`Order #${order.id.slice(0, 8).toUpperCase()} marked Completed.`, 'success');
+        }
+      } catch (error) {
+        handleFirestoreError(error, OperationType.UPDATE, `orders/${order.id}`);
+      }
+    },
+    [user, isSeller, wallet, addToast]
+  );
+
+  const cancelSellerOrder = useCallback(
+    async (order: Order) => {
+      if (!user || !isSeller) {
+        throw new Error('Verified active seller access required.');
+      }
+      if (order.sellerUid !== user.uid) {
+        throw new Error('You can only cancel orders assigned to your seller account.');
+      }
+      if (order.status !== 'Pending') {
+        throw new Error('Only pending orders can be cancelled.');
+      }
+      try {
+        await updateDoc(doc(db, 'orders', order.id), {
+          status: 'Cancelled',
+          updatedAt: serverTimestamp(),
+        });
+        addToast(`Order #${order.id.slice(0, 8).toUpperCase()} cancelled.`, 'info');
+      } catch (error) {
+        handleFirestoreError(error, OperationType.UPDATE, `orders/${order.id}`);
+      }
+    },
+    [user, isSeller, addToast]
+  );
+
+  // Buyer-Seller Real-Time Chat Actions
+  const startOrOpenConversation = useCallback(
+    async (input: {
+      buyerUid?: string;
+      buyerName?: string;
+      sellerUid: string;
+      sellerName: string;
+      listingId?: string;
+      listingTitle?: string;
+    }): Promise<string> => {
+      if (!user || !user.emailVerified) {
+        throw new Error('Please sign in with a verified Google account to use chat.');
+      }
+      const buyerUid = sanitizeText(input.buyerUid || user.uid, 128).replace(/[^a-zA-Z0-9_-]/g, '_');
+      const sellerUid = sanitizeText(input.sellerUid, 128).replace(/[^a-zA-Z0-9_-]/g, '_');
+      if (!sellerUid) {
+        throw new Error('Seller information is unavailable for this item.');
+      }
+      if (buyerUid === sellerUid) {
+        throw new Error('You cannot start a chat conversation with yourself.');
+      }
+
+      const convId = `conv_${buyerUid}_${sellerUid}`.slice(0, 128);
+      const listingId = sanitizeText(input.listingId || '', 128);
+      const listingTitle = sanitizeText(input.listingTitle || '', FIELD_LIMITS.LISTING_TITLE_MAX);
+      const buyerName = sanitizeText(
+        input.buyerName || user.displayName || user.email?.split('@')[0] || 'Buyer',
+        100
+      );
+      const sellerName = sanitizeText(input.sellerName || 'Verified Seller', FIELD_LIMITS.SELLER_NAME_MAX);
+
+      const existingConv = conversations.find(
+        (c) => c.id === convId || (c.buyerUid === buyerUid && c.sellerUid === sellerUid)
+      );
+
+      if (existingConv) {
+        if (listingId && listingTitle && existingConv.listingId !== listingId) {
+          try {
+            await updateDoc(doc(db, 'conversations', existingConv.id), {
+              listingId,
+              listingTitle,
+              updatedAt: serverTimestamp(),
+            });
+          } catch {
+            // Non-blocking context topic refresh
+          }
+        }
+        return existingConv.id;
+      }
+
+      try {
+        await setDoc(doc(db, 'conversations', convId), {
+          buyerUid,
+          sellerUid,
+          buyerName,
+          sellerName,
+          listingId,
+          listingTitle,
+          lastMessage: '',
+          lastSenderUid: '',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+        return convId;
+      } catch (error) {
+        handleFirestoreError(error, OperationType.WRITE, `conversations/${convId}`);
+      }
+    },
+    [user, conversations]
+  );
+
+  const sendChatMessage = useCallback(
+    async (conversation: Conversation, text: string) => {
+      if (!user || !user.emailVerified) {
+        throw new Error('Please sign in with Google to send messages.');
+      }
+      const cleanText = sanitizeText(text, FIELD_LIMITS.CHAT_MESSAGE_MAX);
+      if (!cleanText) {
+        throw new Error('Message cannot be empty.');
+      }
+      if (user.uid !== conversation.buyerUid && user.uid !== conversation.sellerUid) {
+        throw new Error('You are not a participant in this conversation.');
+      }
+      const senderName = sanitizeText(
+        user.uid === conversation.sellerUid
+          ? sellerRecord?.fullName || conversation.sellerName
+          : user.displayName || conversation.buyerName || user.email?.split('@')[0] || 'User',
+        100
+      );
+
+      try {
+        await addDoc(collection(db, 'conversations', conversation.id, 'messages'), {
+          conversationId: conversation.id,
+          buyerUid: conversation.buyerUid,
+          sellerUid: conversation.sellerUid,
+          senderUid: user.uid,
+          senderName,
+          text: cleanText,
+          createdAt: serverTimestamp(),
+        });
+        await updateDoc(doc(db, 'conversations', conversation.id), {
+          lastMessage: cleanText.slice(0, FIELD_LIMITS.CONVERSATION_PREVIEW_MAX),
+          lastSenderUid: user.uid,
+          updatedAt: serverTimestamp(),
+        });
+      } catch (error) {
+        handleFirestoreError(error, OperationType.CREATE, `conversations/${conversation.id}/messages`);
+      }
+    },
+    [user, sellerRecord]
   );
 
   const deleteOrder = useCallback(
@@ -1298,6 +1606,12 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
         minWithdrawalActiveCurrency,
         depositToWallet,
         withdrawFromWallet,
+        sellerOrders,
+        completeSellerOrder,
+        cancelSellerOrder,
+        conversations,
+        startOrOpenConversation,
+        sendChatMessage,
         toasts,
         addToast,
         removeToast,

@@ -12,6 +12,7 @@ import {
   UserCheck,
   AlertCircle,
   Loader2,
+  MessageCircle,
 } from 'lucide-react';
 import { useMarketplace } from '../context/MarketplaceContext';
 
@@ -26,7 +27,10 @@ export const ListingDetailPage: React.FC = () => {
     formatPrice,
     formatInr,
     wallet,
+    allSellers,
     createOrder,
+    startOrOpenConversation,
+    addToast,
   } = useMarketplace();
 
   const listing = useMemo(() => listings.find((l) => l.id === id), [listings, id]);
@@ -35,8 +39,44 @@ export const ListingDetailPage: React.FC = () => {
   const [deliveryInstructions, setDeliveryInstructions] = useState('');
   const [useWallet, setUseWallet] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [openingChat, setOpeningChat] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [confirmedOrderId, setConfirmedOrderId] = useState<string | null>(null);
+
+  const resolvedSellerUid = useMemo(() => {
+    if (!listing) return '';
+    if (listing.sellerUid) return listing.sellerUid;
+    return (
+      allSellers.find((s) => s.fullName.toLowerCase() === listing.sellerName.toLowerCase())?.userId ||
+      ''
+    );
+  }, [listing, allSellers]);
+
+  const handleChatWithSeller = async () => {
+    if (!listing) return;
+    if (!user) {
+      const signedIn = await signInWithGoogle();
+      if (!signedIn) return;
+    }
+    if (!resolvedSellerUid) {
+      addToast('Seller chat is unavailable for this legacy listing.', 'info');
+      return;
+    }
+    setOpeningChat(true);
+    try {
+      const convId = await startOrOpenConversation({
+        sellerUid: resolvedSellerUid,
+        sellerName: listing.sellerName,
+        listingId: listing.id,
+        listingTitle: listing.title,
+      });
+      navigate(`/chat?conversationId=${encodeURIComponent(convId)}`);
+    } catch (err: unknown) {
+      addToast(err instanceof Error ? err.message : 'Unable to start chat.', 'error');
+    } finally {
+      setOpeningChat(false);
+    }
+  };
 
   if (loadingData) {
     return (
@@ -195,7 +235,7 @@ export const ListingDetailPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-6 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-200 shrink-0">
+            <div className="flex flex-wrap items-center gap-5 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-200 shrink-0">
               <div>
                 <div className="text-xs font-bold text-slate-600">Seller Rating</div>
                 <div className="flex items-center gap-1 font-mono font-black text-base text-[#0F172A] tabular-nums mt-0.5">
@@ -209,6 +249,17 @@ export const ListingDetailPage: React.FC = () => {
                   {listing.deliverySpeed}
                 </div>
               </div>
+              {(!user || !resolvedSellerUid || user.uid !== resolvedSellerUid) && (
+                <button
+                  type="button"
+                  onClick={handleChatWithSeller}
+                  disabled={openingChat}
+                  className="btn-pink inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold disabled:opacity-50"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>{openingChat ? 'Opening...' : 'Chat with Seller'}</span>
+                </button>
+              )}
             </div>
           </section>
 

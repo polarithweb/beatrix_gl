@@ -8,6 +8,7 @@ import {
   isValidImageUrlOrDataUri,
   getMinWithdrawalInCurrency,
   MIN_WITHDRAWAL_INR,
+  FIELD_LIMITS,
 } from '../src/types';
 
 describe('Marketplace Security & Validation Utilities', () => {
@@ -17,6 +18,16 @@ describe('Marketplace Security & Validation Utilities', () => {
     assert.equal(cleaned.includes('<'), false);
     assert.equal(cleaned.includes('>'), false);
     assert.equal(cleaned, 'scriptalert("xss")/scriptHello World');
+  });
+
+  it('caps buyer-seller chat messages at FIELD_LIMITS.CHAT_MESSAGE_MAX and previews at CONVERSATION_PREVIEW_MAX', () => {
+    assert.equal(FIELD_LIMITS.CHAT_MESSAGE_MAX, 1000);
+    assert.equal(FIELD_LIMITS.CONVERSATION_PREVIEW_MAX, 500);
+    const oversized = '<img src=x onerror=alert(1)>' + 'a'.repeat(1500);
+    const sanitized = sanitizeText(oversized, FIELD_LIMITS.CHAT_MESSAGE_MAX);
+    assert.equal(sanitized.length, FIELD_LIMITS.CHAT_MESSAGE_MAX);
+    assert.equal(sanitized.includes('<'), false);
+    assert.equal(sanitized.includes('>'), false);
   });
 
   it('generates URL-safe lowercase slugs', () => {
@@ -82,3 +93,60 @@ describe('Games Catalogue & Top 20 Integrity', () => {
     assert.equal(uniqueImageRefs.size, 20);
   });
 });
+
+describe('Seller Studio & Buyer-Seller Chat Integration', () => {
+  it('registers /seller and /chat routes in App.tsx and navigation entries in Navbar.tsx', () => {
+    const appSource = fs.readFileSync(path.resolve('src/App.tsx'), 'utf-8');
+    const navbarSource = fs.readFileSync(path.resolve('src/components/Navbar.tsx'), 'utf-8');
+
+    assert.match(appSource, /path="\/seller"\s+element=\{<SellerDashboardPage\s*\/>\}/);
+    assert.match(appSource, /path="\/chat"\s+element=\{<ChatPage\s*\/>\}/);
+    assert.match(navbarSource, /to="\/chat"/);
+    assert.match(navbarSource, /to="\/seller"/);
+  });
+
+  it('enforces seller ownership and chat isolation in firestore.rules', () => {
+    const rulesSource = fs.readFileSync(path.resolve('firestore.rules'), 'utf-8');
+
+    assert.match(rulesSource, /function isActiveSeller\(\)/);
+    assert.match(rulesSource, /match \/conversations\/\{conversationId\}/);
+    assert.match(rulesSource, /match \/messages\/\{messageId\}/);
+    assert.match(rulesSource, /incoming\(\)\.sellerUid == request\.auth\.uid/);
+    assert.match(rulesSource, /existing\(\)\.sellerUid == request\.auth\.uid/);
+  });
+});
+
+describe('Deployment & GitHub Actions Readiness', () => {
+  it('configures .github/workflows/deploy.yml with full verification gates and lockfile-safe install', () => {
+    const workflow = fs.readFileSync(
+      path.resolve('.github/workflows/deploy.yml'),
+      'utf-8'
+    );
+    assert.equal(workflow.includes('cache: "npm"'), false);
+    assert.match(workflow, /npm run lint\b/);
+    assert.match(workflow, /npm run lint:rules\b/);
+    assert.match(workflow, /npm test\b/);
+    assert.match(workflow, /npm run build\b/);
+    assert.match(workflow, /actions\/deploy-pages@v4/);
+  });
+
+  it('uses HashRouter and BASE_URL-relative public asset paths in App.tsx', () => {
+    const appSource = fs.readFileSync(path.resolve('src/App.tsx'), 'utf-8');
+    assert.match(appSource, /HashRouter/);
+    assert.match(appSource, /import\.meta\.env\.BASE_URL/);
+    assert.equal(appSource.includes('src="/assets/'), false);
+  });
+
+  it('binds firebase.json to the provisioned named Firestore database', () => {
+    const firebaseJson = JSON.parse(
+      fs.readFileSync(path.resolve('firebase.json'), 'utf-8')
+    );
+    const appletConfig = JSON.parse(
+      fs.readFileSync(path.resolve('firebase-applet-config.json'), 'utf-8')
+    );
+    assert.equal(firebaseJson.firestore.database, appletConfig.firestoreDatabaseId);
+    assert.equal(firebaseJson.firestore.rules, 'firestore.rules');
+    assert.equal(firebaseJson.hosting.public, 'dist');
+  });
+});
+
