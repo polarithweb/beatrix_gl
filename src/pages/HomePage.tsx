@@ -401,38 +401,82 @@ export const HomePage: React.FC = () => {
   return (
     <main className="w-full max-w-full space-y-12 sm:space-y-16 pb-20 overflow-x-hidden min-w-0">
       {/* =========================================================================
-          1. Hero Section: Directly on Background (NO white box, NO buttons, NO Beatrix logo)
+          1. Hero Section: Full-Width Edge-to-Edge Directly Under Beatrix.gl Bar
+             Diluted atmospheric blend fading seamlessly downwards with zero visible line
          ========================================================================= */}
-      <section className="relative w-full max-w-[1400px] mx-auto pt-4 sm:pt-6 px-4 sm:px-6">
-        <div className="relative w-full h-[300px] sm:h-[400px] md:h-[480px] lg:h-[520px] rounded-3xl overflow-hidden bg-slate-950 shadow-[0_14px_36px_rgba(15,23,42,0.12)]">
+      <section className="relative w-full overflow-x-clip">
+        <div className="relative w-full h-[400px] sm:h-[490px] md:h-[560px] lg:h-[620px]">
+          {/* Diluted Top Artwork tapering smoothly into the blur well above the bottom */}
           <img
             src={heroImageSrc}
             alt="Gaming Showcase"
             referrerPolicy="no-referrer"
             onError={() => setBannerLoadError(true)}
-            className="w-full h-full object-cover object-center select-none"
+            style={{
+              maskImage:
+                'linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.58) 18%, rgba(0, 0, 0, 0.24) 36%, rgba(0, 0, 0, 0.06) 50%, transparent 62%)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.58) 18%, rgba(0, 0, 0, 0.24) 36%, rgba(0, 0, 0, 0.06) 50%, transparent 62%)',
+            }}
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-70 select-none"
           />
 
-          {/* Multi-Stop Cinematic Contrast Scrim */}
+          {/* Mid-Zone Soft Diluted Blur Layer */}
+          <img
+            src={heroImageSrc}
+            alt=""
+            aria-hidden="true"
+            referrerPolicy="no-referrer"
+            style={{
+              maskImage:
+                'linear-gradient(to bottom, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.68) 24%, rgba(0, 0, 0, 0.42) 46%, rgba(0, 0, 0, 0.16) 64%, rgba(0, 0, 0, 0.04) 76%, transparent 86%)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, rgba(0, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.68) 24%, rgba(0, 0, 0, 0.42) 46%, rgba(0, 0, 0, 0.16) 64%, rgba(0, 0, 0, 0.04) 76%, transparent 86%)',
+            }}
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-75 blur-2xl scale-105 pointer-events-none select-none"
+          />
+
+          {/* Deep Heavy Diluted Blur Layer dissolving completely before container bottom */}
+          <img
+            src={heroImageSrc}
+            alt=""
+            aria-hidden="true"
+            referrerPolicy="no-referrer"
+            style={{
+              maskImage:
+                'linear-gradient(to bottom, transparent 8%, rgba(0, 0, 0, 0.65) 34%, rgba(0, 0, 0, 0.38) 54%, rgba(0, 0, 0, 0.14) 70%, rgba(0, 0, 0, 0.03) 82%, transparent 91%)',
+              WebkitMaskImage:
+                'linear-gradient(to bottom, transparent 8%, rgba(0, 0, 0, 0.65) 34%, rgba(0, 0, 0, 0.38) 54%, rgba(0, 0, 0, 0.14) 70%, rgba(0, 0, 0, 0.03) 82%, transparent 91%)',
+            }}
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-65 blur-3xl scale-110 pointer-events-none select-none"
+          />
+
+          {/* Soft Elliptical Readability Scrim (zero straight edges on any side) */}
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/65 to-slate-950/20 pointer-events-none"
+            style={{
+              background:
+                'radial-gradient(ellipse 80% 70% at 24% 40%, rgba(15, 23, 42, 0.62) 0%, rgba(15, 23, 42, 0.32) 45%, rgba(15, 23, 42, 0.08) 70%, transparent 88%)',
+            }}
+            className="absolute inset-0 pointer-events-none"
           />
 
-          {/* In-Banner Content Overlay: Direct Typography (NO BUTTONS, NO LOGO) */}
-          <div className="absolute inset-0 z-10 flex flex-col justify-end p-6 sm:p-10 lg:p-14 max-w-4xl min-w-0">
-            <h1 className="font-display font-black text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.12] drop-shadow-md">
-              {siteSettings?.heroTitle || 'Next-Gen Digital Gaming Marketplace'}
-            </h1>
+          {/* In-Banner Content Overlay: Centered in vivid zone above downward blur, NO buttons, NO logo */}
+          <div className="relative z-10 max-w-[1400px] mx-auto h-full px-4 sm:px-6 flex flex-col justify-center pb-16 sm:pb-24 md:pb-28">
+            <div className="max-w-3xl min-w-0">
+              <h1 className="font-display italic font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-tight leading-[1.12] drop-shadow-md">
+                {siteSettings?.heroTitle || 'Next-Gen Digital Gaming Marketplace'}
+              </h1>
 
-            <p className="mt-3 sm:mt-4 text-xs sm:text-base md:text-lg text-slate-200 font-medium leading-relaxed max-w-2xl drop-shadow-sm">
-              {siteSettings?.heroSubtitle ||
-                'Premium currency, high-tier accounts, rare skins, and boosting services across Minecraft, Valorant, GTA V, and top global titles.'}
-            </p>
+              <p className="mt-2.5 sm:mt-4 font-editorial font-semibold text-sm sm:text-lg md:text-xl text-slate-100 leading-relaxed max-w-2xl drop-shadow-sm">
+                {siteSettings?.heroSubtitle ||
+                  'Premium currency, high-tier accounts, rare skins, and boosting services across Minecraft, Valorant, GTA V, and top global titles.'}
+              </p>
 
-            <div className="mt-5 sm:mt-6 flex items-center gap-2 text-xs sm:text-sm font-semibold text-pink-200/90 tracking-wide select-none">
-              <span>Scroll down to explore marketplace offers</span>
-              <ChevronDown className="w-4 h-4 text-pink-300 animate-bounce" />
+              <div className="mt-4 sm:mt-6 flex items-center gap-2 font-script font-bold text-base sm:text-xl text-pink-200 tracking-wide select-none drop-shadow-sm">
+                <span>Scroll down to explore marketplace offers</span>
+                <ChevronDown className="w-4 h-4 text-pink-300 animate-bounce" />
+              </div>
             </div>
           </div>
         </div>
@@ -490,10 +534,10 @@ export const HomePage: React.FC = () => {
                 }}
                 className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-8 flex flex-col justify-center frosted-glass-strong border border-slate-200/90 shadow-[0_16px_36px_rgba(15,23,42,0.08),0_4px_16px_rgba(244,114,182,0.12)]"
               >
-                <h3 className="font-display font-black text-2xl sm:text-3xl text-[#0F172A] tracking-tight">
+                <h3 className="font-brand font-normal text-2xl sm:text-3xl text-[#0F172A] tracking-wide">
                   {card.title}
                 </h3>
-                <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-slate-800 font-medium leading-relaxed">
+                <p className="mt-2.5 sm:mt-3 font-editorial font-semibold text-sm sm:text-base text-slate-800 leading-relaxed">
                   {card.text}
                 </p>
               </div>
@@ -517,10 +561,10 @@ export const HomePage: React.FC = () => {
                 }}
                 className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-8 flex flex-col justify-center frosted-glass-strong border border-slate-200/90 shadow-[0_16px_36px_rgba(15,23,42,0.08),0_4px_16px_rgba(244,114,182,0.12)] pointer-events-none"
               >
-                <h3 className="font-display font-black text-2xl sm:text-3xl text-[#0F172A] tracking-tight">
+                <h3 className="font-brand font-normal text-2xl sm:text-3xl text-[#0F172A] tracking-wide">
                   {item.card.title}
                 </h3>
-                <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-slate-800 font-medium leading-relaxed">
+                <p className="mt-2.5 sm:mt-3 font-editorial font-semibold text-sm sm:text-base text-slate-800 leading-relaxed">
                   {item.card.text}
                 </p>
               </div>
@@ -538,7 +582,7 @@ export const HomePage: React.FC = () => {
         className="relative w-full max-w-[1400px] mx-auto px-4 sm:px-6 space-y-6 min-w-0"
       >
         <div className="text-center">
-          <h2 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl text-[#0F172A] tracking-tight">
+          <h2 className="font-vintage italic font-bold text-2xl sm:text-3xl lg:text-4xl text-[#0F172A] tracking-tight">
             Popular Games
           </h2>
         </div>
@@ -629,7 +673,7 @@ export const HomePage: React.FC = () => {
                   className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-slate-950/90 via-slate-950/45 to-transparent pointer-events-none"
                 />
                 <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 pointer-events-none">
-                  <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight drop-shadow-md truncate">
+                  <h3 className="font-vintage font-extrabold text-xl sm:text-2xl text-white tracking-tight drop-shadow-md truncate">
                     {gameCard.title}
                   </h3>
                 </div>
@@ -666,7 +710,7 @@ export const HomePage: React.FC = () => {
                   className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-slate-950/90 via-slate-950/45 to-transparent pointer-events-none"
                 />
                 <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 pointer-events-none">
-                  <h3 className="font-display font-black text-xl sm:text-2xl text-white tracking-tight drop-shadow-md truncate">
+                  <h3 className="font-vintage font-extrabold text-xl sm:text-2xl text-white tracking-tight drop-shadow-md truncate">
                     {item.card.title}
                   </h3>
                 </div>
@@ -683,10 +727,10 @@ export const HomePage: React.FC = () => {
       <section className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 space-y-6 min-w-0">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div>
-            <h2 className="font-display font-black text-xl sm:text-2xl lg:text-3xl text-[#0F172A] tracking-tight">
+            <h2 className="font-display font-bold text-xl sm:text-2xl lg:text-3xl text-[#0F172A] tracking-tight">
               Active Marketplace Offers
             </h2>
-            <p className="text-xs sm:text-sm text-slate-800 font-medium mt-1">
+            <p className="font-editorial italic text-sm sm:text-base text-slate-800 font-semibold mt-1">
               Instant &amp; verified player-to-player offers protected by TradeShield.
             </p>
           </div>
@@ -865,7 +909,7 @@ export const HomePage: React.FC = () => {
                       />
                     )}
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-display font-extrabold text-sm sm:text-base text-[#0F172A] group-hover:text-blue-900 transition-colors line-clamp-2 break-words">
+                      <h3 className="font-vintage font-bold text-sm sm:text-base text-[#0F172A] group-hover:text-blue-900 transition-colors line-clamp-2 break-words">
                         {offer.title}
                       </h3>
                       <p className="text-xs text-slate-700 font-medium line-clamp-2 mt-1 break-words">

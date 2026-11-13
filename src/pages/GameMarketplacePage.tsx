@@ -146,16 +146,16 @@ export const GameMarketplacePage: React.FC = () => {
                   className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-white bg-white shadow-md shrink-0"
                 />
               ) : (
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl btn-navy text-white font-display font-black text-2xl flex items-center justify-center shadow-md shrink-0">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl btn-navy text-white font-brand font-normal text-3xl flex items-center justify-center shadow-md shrink-0">
                   {game.title.charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 text-xs text-[#0F172A] font-bold truncate">
+                <div className="flex items-center gap-2 font-script text-base text-[#0F172A] font-bold truncate">
                   <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-[#0F172A]" />
                   <span>Verified Game Marketplace</span>
                 </div>
-                <h1 className="font-display font-black text-2xl sm:text-4xl text-[#0F172A] mt-0.5 truncate break-words">
+                <h1 className="font-vintage font-extrabold text-2xl sm:text-4xl text-[#0F172A] mt-0.5 truncate break-words">
                   {game.title}
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-800 font-bold mt-1 font-mono tabular-nums">
@@ -321,7 +321,7 @@ export const GameMarketplacePage: React.FC = () => {
                       />
                     )}
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-display font-extrabold text-base text-[#0F172A] group-hover:text-blue-900 transition-colors line-clamp-2 break-words">
+                      <h3 className="font-vintage font-bold text-base text-[#0F172A] group-hover:text-blue-900 transition-colors line-clamp-2 break-words">
                         {offer.title}
                       </h3>
                       <p className="text-xs text-slate-700 font-medium line-clamp-2 mt-1 break-words">

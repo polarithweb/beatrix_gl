@@ -6,6 +6,18 @@ import battleRoyaleImg from '../assets/images/game_battle_royale_1794498471636.j
 import animeFantasyImg from '../assets/images/game_anime_fantasy_1794498486883.jpg';
 import darkDungeonImg from '../assets/images/game_dark_dungeon_1794498501595.jpg';
 import esportsArenaImg from '../assets/images/game_esports_arena_1794498515197.jpg';
+import robloxImg from '../assets/images/roblox_metaverse_card_1794513255631.jpg';
+import codImg from '../assets/images/cod_warzone_card_1794513257304.jpg';
+import wowImg from '../assets/images/wow_azeroth_card_1794513257033.jpg';
+import rocketLeagueImg from '../assets/images/rocket_league_card_1794513259191.jpg';
+import apexLegendsImg from '../assets/images/apex_legends_card_1794513259663.jpg';
+import osrsImg from '../assets/images/osrs_fantasy_card_1794513258478.jpg';
+import clashClansImg from '../assets/images/clash_clans_card_1794513259035.jpg';
+import bloxFruitsImg from '../assets/images/blox_fruits_card_1794513260878.jpg';
+import fcStadiumImg from '../assets/images/fc_stadium_card_1794513261760.jpg';
+import poe2Img from '../assets/images/poe2_relic_card_1794513261705.jpg';
+import overwatchImg from '../assets/images/overwatch_hero_card_1794513261155.jpg';
+import brawlStarsImg from '../assets/images/brawl_stars_card_1794513263154.jpg';
 import { Game } from '../types';
 
 export interface ProminentGameCard {
@@ -96,7 +108,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'roblox',
     badge: 'Global Metaverse',
     subtitle: 'Robux vouchers, limited items, Korblox accounts & collectibles',
-    imageUrl: minecraftImg,
+    imageUrl: robloxImg,
     categories: 'Robux · Limited Items · Korblox · Headless',
     activeOffersCount: 3100,
   },
@@ -106,7 +118,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'call-of-duty',
     badge: 'Warzone & Modern Warfare',
     subtitle: 'COD Points, weapon camo mastery boosting & unlocked accounts',
-    imageUrl: tacticalImg,
+    imageUrl: codImg,
     categories: 'Borealis Camos · Bot Lobbies · Accounts · CP Top Up',
     activeOffersCount: 760,
   },
@@ -116,7 +128,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'world-of-warcraft',
     badge: 'The War Within',
     subtitle: 'Mythic+ carries, retail & classic gold, raid mounts & gear',
-    imageUrl: fantasyImg,
+    imageUrl: wowImg,
     categories: 'Gold · Mythic+ Keystones · Raid Boost · Mounts',
     activeOffersCount: 1940,
   },
@@ -136,7 +148,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'rocket-league',
     badge: 'Vehicular Esports',
     subtitle: 'White Octane, Alpha Boost items, credits & Grand Champion boost',
-    imageUrl: esportsArenaImg,
+    imageUrl: rocketLeagueImg,
     categories: 'Credits · Alpha Items · White Octane · Rank Boost',
     activeOffersCount: 450,
   },
@@ -146,7 +158,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'apex-legends',
     badge: 'Fast Squad Shooter',
     subtitle: 'Heirloom shards, Predator rank boosting & 4K 20 bomb badges',
-    imageUrl: battleRoyaleImg,
+    imageUrl: apexLegendsImg,
     categories: 'Heirloom Accounts · Predator Boost · Badges · Coins',
     activeOffersCount: 820,
   },
@@ -156,7 +168,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'old-school-runescape',
     badge: 'Legendary MMORPG',
     subtitle: 'OSRS Millions gold, twisted bow, max combat accounts & questing',
-    imageUrl: fantasyImg,
+    imageUrl: osrsImg,
     categories: 'OSRS Gold · Twisted Bow · Max Accounts · Fire Cape',
     activeOffersCount: 1670,
   },
@@ -166,7 +178,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'clash-of-clans',
     badge: 'Base Strategy Classic',
     subtitle: 'Max Town Hall 16/17 accounts, gems, hero skins & CWL clans',
-    imageUrl: animeFantasyImg,
+    imageUrl: clashClansImg,
     categories: 'Max TH16/TH17 · Level 20+ Clans · Gems · Skins',
     activeOffersCount: 530,
   },
@@ -176,7 +188,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'blox-fruits',
     badge: 'Roblox Phenomenon',
     subtitle: 'Physical Kitsune, Dragon & Leopard fruits, godhuman accounts',
-    imageUrl: animeFantasyImg,
+    imageUrl: bloxFruitsImg,
     categories: 'Permanent Fruits · Kitsune · Godhuman Accounts · Beli',
     activeOffersCount: 2840,
   },
@@ -186,7 +198,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'ea-sports-fc',
     badge: 'Ultimate Team',
     subtitle: 'Ultimate Team coins, comfort trade, Weekend League qualification',
-    imageUrl: esportsArenaImg,
+    imageUrl: fcStadiumImg,
     categories: 'FC Coins · Comfort Trade · Weekend League · Team Building',
     activeOffersCount: 1390,
   },
@@ -196,7 +208,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'path-of-exile-2',
     badge: 'Next-Gen ARPG',
     subtitle: 'Early access divine orbs, unique gear, campaign & mapping carries',
-    imageUrl: darkDungeonImg,
+    imageUrl: poe2Img,
     categories: 'Divine Orbs · Chaos · Campaign Rush · Mapping Carries',
     activeOffersCount: 1040,
   },
@@ -206,7 +218,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'overwatch',
     badge: 'Hero Shooter',
     subtitle: 'Top 500 accounts, Pink Mercy skins, mythic prisms & win boost',
-    imageUrl: esportsArenaImg,
+    imageUrl: overwatchImg,
     categories: 'Pink Mercy · Top 500 · Mythic Prisms · Placement Boost',
     activeOffersCount: 410,
   },
@@ -216,7 +228,7 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
     slug: 'brawl-stars',
     badge: 'Supercell Action',
     subtitle: 'High trophy accounts, hypercharge brawlers, gem top up & skins',
-    imageUrl: battleRoyaleImg,
+    imageUrl: brawlStarsImg,
     categories: 'Trophy Push · Hypercharge · Legendary Brawlers · Gems',
     activeOffersCount: 380,
   },

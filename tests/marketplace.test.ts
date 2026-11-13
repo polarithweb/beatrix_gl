@@ -71,12 +71,14 @@ describe('Games Catalogue & Top 20 Integrity', () => {
     }
   });
 
-  it('defines 20 prominent games for the swipeable showcase', () => {
+  it('defines 20 prominent games for the swipeable showcase with 20 unique non-repeating images', () => {
     const catalogueSource = fs.readFileSync(
       path.resolve('src/data/gamesCatalogue.ts'),
       'utf-8'
     );
-    const idMatches = catalogueSource.match(/imageUrl:\s*[a-zA-Z0-9_]+,/g) || [];
+    const idMatches = catalogueSource.match(/imageUrl:\s*([a-zA-Z0-9_]+),/g) || [];
     assert.equal(idMatches.length, 20);
+    const uniqueImageRefs = new Set(idMatches.map((m) => m.trim()));
+    assert.equal(uniqueImageRefs.size, 20);
   });
 });

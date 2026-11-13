@@ -1,10 +1,26 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --font-poppins: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-brand: 'Berkshire Swash', 'Playfair Display', Georgia, serif;
+  --font-script: 'Dancing Script', 'Cormorant Garamond', cursive;
+  --font-vintage: 'Fraunces', 'Playfair Display', Georgia, serif;
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-editorial: 'Cormorant Garamond', 'Lora', Georgia, serif;
+  --font-sans: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
 @layer base {
   :root {
-    --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-poppins: 'Poppins', system-ui, -apple-system, sans-serif;
+    --font-brand: 'Berkshire Swash', 'Playfair Display', Georgia, serif;
+    --font-script: 'Dancing Script', 'Cormorant Garamond', cursive;
+    --font-vintage: 'Fraunces', 'Playfair Display', Georgia, serif;
+    --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --font-editorial: 'Cormorant Garamond', 'Lora', Georgia, serif;
+    --font-sans: 'Lora', Georgia, 'Times New Roman', serif;
     --font-mono: 'JetBrains Mono', monospace;
   }
 
@@ -19,7 +35,7 @@
 
   body {
     font-family: var(--font-sans);
-    background: linear-gradient(135deg, #FFFFFF 0%, #FFF0F5 40%, #FCE4EC 100%);
+    background: linear-gradient(135deg, #FFE8F5 0%, #FFB8F0 38%, #A5D8FF 75%, #84E4FF 100%);
     color: #0F172A; /* Deep dark slate for maximum crisp readability */
     letter-spacing: 0.01em;
     max-width: 100%;
@@ -29,8 +45,13 @@
     min-height: 100vh;
   }
 
+  button, input, select, textarea {
+    font-family: inherit;
+  }
+
   h1, h2, h3, h4, .font-display {
     font-family: var(--font-display);
+    letter-spacing: -0.01em;
     text-wrap: balance;
     color: #0F172A;
   }

@@ -66,7 +66,16 @@ const AppRoutes: React.FC = () => {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <div className="min-h-screen w-full max-w-full flex flex-col bg-gradient-to-br from-white via-[#FFF0F5] to-[#FCE8F0] text-slate-800 overflow-x-hidden">
+    <div className="relative min-h-screen w-full max-w-full flex flex-col text-slate-800 overflow-x-hidden">
+      {/* Global Pink & Light Blue Silk Gradient Backdrop */}
+      <div aria-hidden="true" className="fixed inset-0 -z-10 pointer-events-none">
+        <img
+          src="/assets/aistudio/IMG_b3686b81-66af-4d69-99aa-0056452b47a4_67782422.jpg"
+          alt=""
+          referrerPolicy="no-referrer"
+          className="w-full h-full object-cover object-center select-none"
+        />
+      </div>
       {!isAdminRoute && <Navbar />}
       <div className="flex-1 w-full max-w-full min-w-0">
         <Routes>

@@ -59,14 +59,14 @@ export const Footer: React.FC = () => {
         {/* Column 1: Brand Summary */}
         <div className="space-y-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl btn-navy flex items-center justify-center text-white font-display font-black text-base shadow-sm">
+            <div className="w-8 h-8 rounded-xl btn-navy flex items-center justify-center text-white font-brand font-normal text-lg shadow-sm">
               {brandName.charAt(0).toUpperCase()}
             </div>
-            <span className="font-display font-black text-lg text-slate-900">
+            <span className="font-brand font-normal text-xl text-slate-900">
               {brandName}
             </span>
           </div>
-          <p className="text-sm text-slate-700 font-medium leading-relaxed max-w-xs">
+          <p className="font-editorial text-base text-slate-700 font-semibold leading-relaxed max-w-xs">
             {siteSettings?.heroSubtitle ||
               'Digital gaming marketplace for in-game currency, verified accounts, rare items, and boosting services.'}
           </p>
@@ -74,7 +74,7 @@ export const Footer: React.FC = () => {
 
         {/* Column 2: Marketplace Categories */}
         <div>
-          <h3 className="font-display font-black text-sm text-slate-900 mb-3.5 tracking-tight">
+          <h3 className="font-vintage font-bold text-base text-slate-900 mb-3.5 tracking-tight">
             Marketplace Categories
           </h3>
           {categories.length === 0 ? (
@@ -98,7 +98,7 @@ export const Footer: React.FC = () => {
 
         {/* Column 3: Support Navigation */}
         <div>
-          <h3 className="font-display font-black text-sm text-slate-900 mb-3.5 tracking-tight">
+          <h3 className="font-vintage font-bold text-base text-slate-900 mb-3.5 tracking-tight">
             Support &amp; Buyer Care
           </h3>
           {supportLinks.length === 0 ? (
@@ -132,7 +132,7 @@ export const Footer: React.FC = () => {
 
         {/* Column 4: Legal & Marketplace Rules */}
         <div>
-          <h3 className="font-display font-black text-sm text-slate-900 mb-3.5 tracking-tight">
+          <h3 className="font-vintage font-bold text-base text-slate-900 mb-3.5 tracking-tight">
             Legal &amp; Rules
           </h3>
           {legalLinks.length === 0 ? (

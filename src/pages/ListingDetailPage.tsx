@@ -153,7 +153,7 @@ export const ListingDetailPage: React.FC = () => {
                   </span>
                 </div>
 
-                <h1 className="font-display font-black text-2xl sm:text-3xl text-[#0F172A] break-words">
+                <h1 className="font-display italic font-bold text-2xl sm:text-3xl text-[#0F172A] break-words">
                   {listing.title}
                 </h1>
 
@@ -176,7 +176,7 @@ export const ListingDetailPage: React.FC = () => {
           {/* Seller Rating Card */}
           <section className="frosted-glass rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-slate-200 shadow-sm min-w-0">
             <div className="flex items-center gap-4 min-w-0">
-              <div className="w-12 h-12 rounded-2xl btn-navy flex items-center justify-center text-white font-display font-black text-lg shrink-0 shadow-sm">
+              <div className="w-12 h-12 rounded-2xl btn-navy flex items-center justify-center text-white font-brand font-normal text-xl shrink-0 shadow-sm">
                 {listing.sellerName.charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0">
@@ -219,10 +219,10 @@ export const ListingDetailPage: React.FC = () => {
                 <ShieldCheck className="w-5 h-5 text-[#0F172A]" />
               </div>
               <div>
-                <h2 className="font-display font-black text-base text-[#0F172A]">
+                <h2 className="font-vintage font-bold text-base text-[#0F172A]">
                   TradeShield Buyer Protection
                 </h2>
-                <p className="text-xs text-slate-700 font-medium">
+                <p className="font-editorial text-sm text-slate-700 font-semibold">
                   Every order on our marketplace is backed by 3-point buyer security.
                 </p>
               </div>

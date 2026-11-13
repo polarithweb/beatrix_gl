@@ -103,7 +103,7 @@ export const Navbar: React.FC = () => {
                 </div>
               )}
               <div className="flex flex-col min-w-0">
-                <span className="font-display font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 group-hover:text-blue-900 transition-colors whitespace-nowrap">
+                <span className="font-poppins font-bold text-lg sm:text-xl tracking-tight text-slate-900 group-hover:text-blue-900 transition-colors whitespace-nowrap">
                   {brandName}
                 </span>
               </div>
@@ -191,7 +191,7 @@ export const Navbar: React.FC = () => {
                 <div className="w-7 h-7 rounded-lg flex items-center justify-center text-white bg-[#0F172A]">
                   <Sparkles className="w-4 h-4 text-amber-300" />
                 </div>
-                <span className="font-display font-extrabold text-base text-slate-900">
+                <span className="font-vintage italic font-bold text-lg text-slate-900">
                   Menu &amp; Filters
                 </span>
               </div>
@@ -430,9 +430,9 @@ export const Navbar: React.FC = () => {
 
             {/* Drawer Footer */}
             <div className="p-4 border-t border-slate-200 bg-slate-50 text-center text-xs text-slate-600 font-medium">
-              <span className="font-display font-extrabold text-slate-900">Beatrix.gl</span>
+              <span className="font-brand font-normal text-sm text-slate-900">Beatrix.gl</span>
               <span className="mx-1.5">•</span>
-              <span>Fast &amp; Secure Gaming Marketplace</span>
+              <span className="font-script font-semibold text-sm text-slate-700">Fast &amp; Secure Gaming Marketplace</span>
             </div>
           </div>
         </div>

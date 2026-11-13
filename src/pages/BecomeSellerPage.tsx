@@ -250,12 +250,12 @@ export const BecomeSellerPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+    <div className="w-full max-w-3xl mx-auto px-4 py-8 sm:py-12 min-w-0">
       {/* Header Banner */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full neu-flat text-[#0F172A] text-xs font-black uppercase tracking-wider mb-3 border border-slate-300">
-          <Sparkles className="w-3.5 h-3.5" />
-          Beatrix.gl Partner Program
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full neu-flat text-[#0F172A] text-xs font-black uppercase tracking-wider mb-3 border border-slate-300 max-w-full">
+          <Sparkles className="w-3.5 h-3.5 shrink-0" />
+          <span className="truncate">Beatrix.gl Partner Program</span>
         </div>
         <h1 className="font-display font-black text-3xl sm:text-4xl text-[#0F172A] tracking-tight">
           Become a Verified Seller
@@ -266,7 +266,7 @@ export const BecomeSellerPage: React.FC = () => {
       </div>
 
       {/* Main Registration Card */}
-      <div className="frosted-glass-strong rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-[0_12px_36px_rgba(15,23,42,0.12)]">
+      <div className="frosted-glass-strong rounded-3xl p-5 sm:p-10 border border-slate-200 shadow-[0_12px_36px_rgba(15,23,42,0.12)] min-w-0 overflow-hidden">
         {/* Google Sign-In Check */}
         {!user ? (
           <div className="neu-flat p-6 rounded-2xl text-center space-y-4 border border-slate-300">
@@ -291,24 +291,24 @@ export const BecomeSellerPage: React.FC = () => {
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="neu-flat p-4 rounded-2xl flex items-center justify-between border border-slate-200">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-[#0F172A] font-black border border-slate-300">
+          <form onSubmit={handleSubmit} className="space-y-6 min-w-0">
+            <div className="neu-flat p-3.5 sm:p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-slate-200 min-w-0 overflow-hidden">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-[#0F172A] font-black border border-slate-300 shrink-0">
                   {user.displayName ? user.displayName.charAt(0) : 'U'}
                 </div>
-                <div>
-                  <div className="text-xs font-bold text-slate-900">
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-bold text-slate-900 truncate">
                     {user.displayName || 'Google User'}
                   </div>
-                  <div className="text-[11px] font-mono font-semibold text-slate-600">
+                  <div className="text-[11px] font-mono font-semibold text-slate-600 truncate">
                     {user.email}
                   </div>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-300">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
-                Google Authenticated
+              <span className="inline-flex items-center gap-1.5 self-start sm:self-auto shrink-0 max-w-full text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-300">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                <span className="truncate">Google Authenticated</span>
               </span>
             </div>
 
@@ -320,10 +320,10 @@ export const BecomeSellerPage: React.FC = () => {
             )}
 
             {/* Field: Full Legal Name */}
-            <div>
+            <div className="min-w-0">
               <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1.5 flex items-center gap-1.5">
-                <UserIcon className="w-3.5 h-3.5 text-[#0F172A]" />
-                Full Legal Name (as on National ID) *
+                <UserIcon className="w-3.5 h-3.5 text-[#0F172A] shrink-0" />
+                <span>Full Legal Name (as on National ID) *</span>
               </label>
               <input
                 type="text"
@@ -332,16 +332,16 @@ export const BecomeSellerPage: React.FC = () => {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. Johnathan Alexander Doe"
                 maxLength={120}
-                className="w-full neu-pressed rounded-xl px-4 py-2.5 text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F172A] border border-slate-300"
+                className="w-full min-w-0 neu-pressed rounded-xl px-4 py-2.5 text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F172A] border border-slate-300"
               />
             </div>
 
             {/* Field: Phone Number & WhatsApp Number */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+              <div className="min-w-0">
                 <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1.5 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-[#0F172A]" />
-                  Phone Number *
+                  <Phone className="w-3.5 h-3.5 text-[#0F172A] shrink-0" />
+                  <span>Phone Number *</span>
                 </label>
                 <input
                   type="tel"
@@ -350,14 +350,14 @@ export const BecomeSellerPage: React.FC = () => {
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="e.g. +91 98765 43210"
                   maxLength={30}
-                  className="w-full neu-pressed rounded-xl px-4 py-2.5 text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F172A] border border-slate-300"
+                  className="w-full min-w-0 neu-pressed rounded-xl px-4 py-2.5 text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F172A] border border-slate-300"
                 />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1.5 flex items-center gap-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-emerald-700" />
-                  WhatsApp Number *
+                  <MessageSquare className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                  <span>WhatsApp Number *</span>
                 </label>
                 <input
                   type="tel"
@@ -366,16 +366,16 @@ export const BecomeSellerPage: React.FC = () => {
                   onChange={(e) => setWhatsappNumber(e.target.value)}
                   placeholder="e.g. +91 98765 43210 (with country code)"
                   maxLength={30}
-                  className="w-full neu-pressed rounded-xl px-4 py-2.5 text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 border border-slate-300"
+                  className="w-full min-w-0 neu-pressed rounded-xl px-4 py-2.5 text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 border border-slate-300"
                 />
               </div>
             </div>
 
             {/* Field: Full Physical Address */}
-            <div>
+            <div className="min-w-0">
               <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1.5 flex items-center gap-1.5">
-                <MapPin className="w-3.5 h-3.5 text-[#0F172A]" />
-                Full Physical Address *
+                <MapPin className="w-3.5 h-3.5 text-[#0F172A] shrink-0" />
+                <span>Full Physical Address *</span>
               </label>
               <textarea
                 required
@@ -384,22 +384,22 @@ export const BecomeSellerPage: React.FC = () => {
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="House/Apartment #, Street, City, State, Postal Code, Country"
                 maxLength={400}
-                className="w-full neu-pressed rounded-xl px-4 py-2.5 text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F172A] resize-none border border-slate-300"
+                className="w-full min-w-0 neu-pressed rounded-xl px-4 py-2.5 text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F172A] resize-none border border-slate-300"
               />
             </div>
 
             {/* Field: National ID Document Upload */}
-            <div>
+            <div className="min-w-0">
               <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1.5 flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-[#0F172A]" />
-                Government Approved National ID *
+                <FileText className="w-3.5 h-3.5 text-[#0F172A] shrink-0" />
+                <span>Government Approved National ID *</span>
               </label>
               <p className="text-[11px] text-slate-700 font-medium mb-2">
                 Upload your Passport, Aadhaar, Driver&apos;s License, or National ID Card. Must clearly show full name and photo.
               </p>
 
               {nationalIdUrl ? (
-                <div className="relative neu-flat p-3 rounded-2xl inline-block bg-white/95 border border-slate-300">
+                <div className="relative neu-flat p-3 rounded-2xl block sm:inline-block max-w-full bg-white/95 border border-slate-300">
                   <img
                     src={nationalIdUrl}
                     alt="National ID Preview"
