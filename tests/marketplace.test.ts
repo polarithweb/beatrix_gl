@@ -117,12 +117,22 @@ describe('Seller Studio & Buyer-Seller Chat Integration', () => {
 });
 
 describe('Deployment & GitHub Actions Readiness', () => {
-  it('configures .github/workflows/deploy.yml with full verification gates and lockfile-safe install', () => {
+  it('configures .github/workflows/deploy.yml with full verification gates and ERESOLVE-safe install', () => {
     const workflow = fs.readFileSync(
       path.resolve('.github/workflows/deploy.yml'),
       'utf-8'
     );
+    const rulesWorkflow = fs.readFileSync(
+      path.resolve('.github/workflows/firebase-rules.yml'),
+      'utf-8'
+    );
+    const npmrc = fs.readFileSync(path.resolve('.npmrc'), 'utf-8');
+
+    assert.match(npmrc, /legacy-peer-deps=true/);
     assert.equal(workflow.includes('cache: "npm"'), false);
+    assert.match(workflow, /--legacy-peer-deps/);
+    assert.match(rulesWorkflow, /--legacy-peer-deps/);
+    assert.match(workflow, /enablement:\s*true/);
     assert.match(workflow, /npm run lint\b/);
     assert.match(workflow, /npm run lint:rules\b/);
     assert.match(workflow, /npm test\b/);
