@@ -31,28 +31,28 @@ const ToastContainer: React.FC = () => {
       {toasts.map((t) => (
         <div
           key={t.id}
-          className={`pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border text-xs font-medium frosted-glass-strong shadow-[6px_6px_16px_rgba(244,143,177,0.18)] ${
+          className={`pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border text-xs font-medium black-box-strong shadow-[0_12px_28px_rgba(0,0,0,0.45)] ${
             t.type === 'success'
-              ? 'border-emerald-300 text-emerald-800'
+              ? 'border-emerald-700 text-emerald-300'
               : t.type === 'error'
-              ? 'border-rose-300 text-rose-800'
-              : 'border-pink-300 text-slate-800'
+              ? 'border-rose-700 text-rose-300'
+              : 'border-neutral-700 text-white'
           }`}
         >
           <div className="flex items-center gap-2 min-w-0">
             {t.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
             ) : t.type === 'error' ? (
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
             ) : (
-              <Info className="w-4 h-4 shrink-0 text-pink-600" />
+              <Info className="w-4 h-4 shrink-0 text-pink-400" />
             )}
             <span className="truncate">{t.message}</span>
           </div>
           <button
             type="button"
             onClick={() => removeToast(t.id)}
-            className="text-slate-400 hover:text-slate-700 p-0.5 shrink-0"
+            className="text-neutral-400 hover:text-white p-0.5 shrink-0"
             aria-label="Dismiss notification"
           >
             <X className="w-3.5 h-3.5" />

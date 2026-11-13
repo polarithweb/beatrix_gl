@@ -315,7 +315,7 @@ export const SellerDashboardPage: React.FC = () => {
   if (!authReady) {
     return (
       <main className="max-w-5xl mx-auto px-4 py-16">
-        <div className="h-64 rounded-3xl frosted-glass animate-pulse" />
+        <div className="h-64 rounded-3xl black-box animate-pulse" />
       </main>
     );
   }
@@ -323,14 +323,14 @@ export const SellerDashboardPage: React.FC = () => {
   if (!user) {
     return (
       <main className="max-w-xl mx-auto px-4 py-16 text-center">
-        <div className="frosted-glass-strong rounded-3xl p-8 border border-slate-200 shadow-lg space-y-5">
-          <div className="w-16 h-16 neu-circle mx-auto flex items-center justify-center text-[#0F172A] bg-slate-100">
+        <div className="black-box-strong rounded-3xl p-8 border border-neutral-800 shadow-lg space-y-5 text-white">
+          <div className="w-16 h-16 black-circle mx-auto flex items-center justify-center text-white">
             <Store className="w-8 h-8" />
           </div>
-          <h1 className="font-display font-black text-2xl text-slate-900">
+          <h1 className="font-display font-black text-2xl text-white">
             Sign In to Open Seller Studio
           </h1>
-          <p className="text-sm text-slate-700 font-medium">
+          <p className="text-sm text-neutral-300 font-medium">
             Log in with your verified Google account to list items, manage buyer orders, and withdraw your earnings.
           </p>
           <button
@@ -349,22 +349,22 @@ export const SellerDashboardPage: React.FC = () => {
   if (!isSeller || !sellerRecord) {
     return (
       <main className="max-w-2xl mx-auto px-4 py-14 text-center">
-        <div className="frosted-glass-strong rounded-3xl p-8 border border-slate-200 shadow-lg space-y-4">
-          <div className="w-16 h-16 neu-circle mx-auto flex items-center justify-center bg-amber-100 text-amber-800">
+        <div className="black-box-strong rounded-3xl p-8 border border-neutral-800 shadow-lg space-y-4 text-white">
+          <div className="w-16 h-16 black-circle mx-auto flex items-center justify-center bg-amber-950 text-amber-300 border border-amber-700">
             {sellerApplication?.status === 'Pending' ? (
               <Clock className="w-8 h-8" />
             ) : (
               <ShieldCheck className="w-8 h-8" />
             )}
           </div>
-          <h1 className="font-display font-black text-2xl text-slate-900">
+          <h1 className="font-display font-black text-2xl text-white">
             {sellerRecord?.status === 'Banned'
               ? 'Seller Privileges Suspended'
               : sellerApplication?.status === 'Pending'
               ? 'Seller Verification Under Review'
               : 'Seller Verification Required'}
           </h1>
-          <p className="text-sm text-slate-700 font-medium max-w-md mx-auto">
+          <p className="text-sm text-neutral-300 font-medium max-w-md mx-auto">
             {sellerRecord?.status === 'Banned'
               ? 'Your seller account has been suspended by the platform administrator.'
               : sellerApplication?.status === 'Pending'
@@ -392,40 +392,40 @@ export const SellerDashboardPage: React.FC = () => {
   return (
     <main className="max-w-[1400px] w-full max-w-full min-w-0 overflow-x-hidden mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
       {/* Top Seller Banner & Wallet Overview */}
-      <section className="frosted-glass-strong rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-[0_12px_36px_rgba(15,23,42,0.1)] space-y-6">
+      <section className="black-box-strong rounded-3xl p-6 sm:p-8 border border-neutral-800 shadow-[0_12px_36px_rgba(0,0,0,0.45)] space-y-6 text-white">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 min-w-0">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 text-xs font-extrabold border border-emerald-300">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950 text-emerald-300 text-xs font-extrabold border border-emerald-700">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>Verified Seller Studio</span>
             </div>
-            <h1 className="font-vintage font-bold text-2xl sm:text-4xl text-[#0F172A] break-words">
+            <h1 className="font-vintage font-bold text-2xl sm:text-4xl text-white break-words">
               {sellerRecord.fullName}&apos;s Selling Hub
             </h1>
-            <p className="text-xs sm:text-sm text-slate-700 font-medium">
+            <p className="text-xs sm:text-sm text-neutral-300 font-medium">
               Publish offers across {catalogueGames.length} games, set your own prices and stock, fulfill orders, and withdraw earnings.
             </p>
           </div>
 
           {/* Direct Seller Wallet & Quick Withdraw Card */}
-          <div className="neu-flat rounded-2xl p-5 border border-slate-200 bg-white/95 min-w-0 sm:min-w-[340px] space-y-3">
+          <div className="black-subbox rounded-2xl p-5 border border-neutral-800 min-w-0 sm:min-w-[340px] space-y-3">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
-                <WalletIcon className="w-4 h-4 text-[#0F172A]" />
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
+                <WalletIcon className="w-4 h-4 text-pink-300" />
                 Seller Wallet Balance
               </span>
               <Link
                 to="/wallet"
-                className="text-xs font-bold text-blue-900 hover:underline"
+                className="text-xs font-bold text-pink-300 hover:underline"
               >
                 Full History &rarr;
               </Link>
             </div>
             <div className="flex items-baseline gap-2.5 flex-wrap">
-              <span className="font-mono font-black text-2xl sm:text-3xl text-[#0F172A]">
+              <span className="font-mono font-black text-2xl sm:text-3xl text-white">
                 {formatInr(balanceInr)}
               </span>
-              <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-300">
+              <span className="font-mono text-xs font-bold text-pink-300 bg-neutral-900 px-2.5 py-0.5 rounded-full border border-neutral-700">
                 ≈ {formatPrice(balanceInUsd)}
               </span>
             </div>
@@ -450,30 +450,30 @@ export const SellerDashboardPage: React.FC = () => {
                 <span>Wallet</span>
               </Link>
             </div>
-            <p className="text-[11px] text-slate-600 font-medium">
+            <p className="text-[11px] text-neutral-400 font-medium">
               Min withdrawal: ₹{minWithdrawalInr.toLocaleString()} INR · Completed orders credit wallet automatically.
             </p>
           </div>
         </div>
 
         {/* 3 KPI Strip */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-200">
-          <div className="neu-flat rounded-2xl p-4 border border-slate-200">
-            <div className="text-xs font-bold text-slate-600">My Published Offers</div>
-            <div className="font-mono font-black text-2xl text-[#0F172A] mt-1 tabular-nums">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-neutral-800">
+          <div className="black-subbox rounded-2xl p-4 border border-neutral-800">
+            <div className="text-xs font-bold text-neutral-400">My Published Offers</div>
+            <div className="font-mono font-black text-2xl text-white mt-1 tabular-nums">
               {myListings.filter((l) => l.active).length}{' '}
-              <span className="text-xs text-slate-500 font-semibold">/ {myListings.length} total</span>
+              <span className="text-xs text-neutral-400 font-semibold">/ {myListings.length} total</span>
             </div>
           </div>
-          <div className="neu-flat rounded-2xl p-4 border border-slate-200">
-            <div className="text-xs font-bold text-slate-600">Pending Orders to Fulfill</div>
-            <div className="font-mono font-black text-2xl text-amber-700 mt-1 tabular-nums">
+          <div className="black-subbox rounded-2xl p-4 border border-neutral-800">
+            <div className="text-xs font-bold text-neutral-400">Pending Orders to Fulfill</div>
+            <div className="font-mono font-black text-2xl text-amber-400 mt-1 tabular-nums">
               {pendingOrdersCount}
             </div>
           </div>
-          <div className="neu-flat rounded-2xl p-4 border border-slate-200">
-            <div className="text-xs font-bold text-slate-600">Completed Sales</div>
-            <div className="font-mono font-black text-2xl text-emerald-700 mt-1 tabular-nums">
+          <div className="black-subbox rounded-2xl p-4 border border-neutral-800">
+            <div className="text-xs font-bold text-neutral-400">Completed Sales</div>
+            <div className="font-mono font-black text-2xl text-emerald-400 mt-1 tabular-nums">
               {completedOrdersCount}
             </div>
           </div>
@@ -527,14 +527,14 @@ export const SellerDashboardPage: React.FC = () => {
           {/* Publish / Edit Offer Form */}
           <form
             onSubmit={handleSaveListing}
-            className="frosted-glass-strong rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5"
+            className="black-box-strong rounded-3xl p-6 sm:p-8 border border-neutral-800 shadow-sm space-y-5 text-white"
           >
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
-                <h2 className="font-display font-black text-xl text-[#0F172A]">
+                <h2 className="font-display font-black text-xl text-white">
                   {editingListingId ? 'Edit Your Marketplace Offer' : 'Publish a New Item / Offer'}
                 </h2>
-                <p className="text-xs text-slate-700 font-medium mt-0.5">
+                <p className="text-xs text-neutral-300 font-medium mt-0.5">
                   Choose any game and category, set your price and stock, and go live immediately.
                 </p>
               </div>
@@ -550,8 +550,8 @@ export const SellerDashboardPage: React.FC = () => {
             </div>
 
             {listingFormError && (
-              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <div className="p-3.5 rounded-2xl bg-rose-950 border border-rose-800 text-rose-200 text-xs font-bold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
                 <span>{listingFormError}</span>
               </div>
             )}
@@ -561,7 +561,7 @@ export const SellerDashboardPage: React.FC = () => {
               <div className="space-y-1.5 relative">
                 <label
                   htmlFor="seller-game-search"
-                  className="block text-xs font-extrabold uppercase tracking-wider text-slate-900"
+                  className="block text-xs font-extrabold uppercase tracking-wider text-white"
                 >
                   Select Game *
                 </label>
@@ -578,12 +578,12 @@ export const SellerDashboardPage: React.FC = () => {
                     setListingGameDropdownOpen(true);
                   }}
                   placeholder="Type game name (e.g., Valorant, Minecraft, GTA 5)..."
-                  className="w-full neu-pressed rounded-xl px-3.5 py-2.5 text-sm text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                  className="w-full black-input rounded-xl px-3.5 py-2.5 text-sm text-white font-semibold placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
                 {listingGameDropdownOpen && (
-                  <div className="absolute left-0 right-0 top-full mt-1 z-30 max-h-56 overflow-y-auto bg-white rounded-xl border border-slate-300 shadow-xl divide-y divide-slate-100">
+                  <div className="absolute left-0 right-0 top-full mt-1 z-30 max-h-56 overflow-y-auto bg-neutral-950 rounded-xl border border-neutral-700 shadow-xl divide-y divide-neutral-800">
                     {searchableGames.length === 0 ? (
-                      <div className="px-3.5 py-2.5 text-xs text-slate-500">
+                      <div className="px-3.5 py-2.5 text-xs text-neutral-400">
                         No matching game found.
                       </div>
                     ) : (
@@ -597,10 +597,10 @@ export const SellerDashboardPage: React.FC = () => {
                             setListingGameSearch(g.title);
                             setListingGameDropdownOpen(false);
                           }}
-                          className="w-full text-left px-3.5 py-2 text-xs font-semibold text-slate-800 hover:bg-[#FFF0F5] flex items-center justify-between"
+                          className="w-full text-left px-3.5 py-2 text-xs font-semibold text-white hover:bg-neutral-900 flex items-center justify-between"
                         >
                           <span>{g.title}</span>
-                          <span className="text-[10px] text-slate-400 font-mono">/{g.slug}</span>
+                          <span className="text-[10px] text-neutral-400 font-mono">/{g.slug}</span>
                         </button>
                       ))
                     )}
@@ -612,7 +612,7 @@ export const SellerDashboardPage: React.FC = () => {
               <div className="space-y-1.5">
                 <label
                   htmlFor="seller-category-select"
-                  className="block text-xs font-extrabold uppercase tracking-wider text-slate-900"
+                  className="block text-xs font-extrabold uppercase tracking-wider text-white"
                 >
                   Category *
                 </label>
@@ -621,7 +621,7 @@ export const SellerDashboardPage: React.FC = () => {
                   required
                   value={listingCategoryId}
                   onChange={(e) => setListingCategoryId(e.target.value)}
-                  className="w-full neu-pressed rounded-xl px-3.5 py-2.5 text-sm text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                  className="w-full black-input rounded-xl px-3.5 py-2.5 text-sm text-white font-semibold focus:outline-none focus:ring-2 focus:ring-pink-400"
                 >
                   <option value="">-- Choose Category --</option>
                   {categories.map((c) => (
@@ -631,7 +631,7 @@ export const SellerDashboardPage: React.FC = () => {
                   ))}
                 </select>
                 {categories.length === 0 && (
-                  <p className="text-[11px] text-amber-800 font-semibold">
+                  <p className="text-[11px] text-amber-300 font-semibold">
                     No categories exist yet. Please ask an admin to add marketplace categories first.
                   </p>
                 )}
@@ -641,7 +641,7 @@ export const SellerDashboardPage: React.FC = () => {
             <div className="space-y-1.5">
               <label
                 htmlFor="seller-offer-title"
-                className="block text-xs font-extrabold uppercase tracking-wider text-slate-900"
+                className="block text-xs font-extrabold uppercase tracking-wider text-white"
               >
                 Offer Title *
               </label>
@@ -653,14 +653,14 @@ export const SellerDashboardPage: React.FC = () => {
                 value={listingTitle}
                 onChange={(e) => setListingTitle(e.target.value)}
                 placeholder="e.g., 5,000 VP Instant Gift Card Code — Global"
-                className="w-full neu-pressed rounded-xl px-3.5 py-2.5 text-sm text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                className="w-full black-input rounded-xl px-3.5 py-2.5 text-sm text-white font-semibold placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
               />
             </div>
 
             <div className="space-y-1.5">
               <label
                 htmlFor="seller-offer-desc"
-                className="block text-xs font-extrabold uppercase tracking-wider text-slate-900"
+                className="block text-xs font-extrabold uppercase tracking-wider text-white"
               >
                 Offer Description &amp; Delivery Terms
               </label>
@@ -671,7 +671,7 @@ export const SellerDashboardPage: React.FC = () => {
                 value={listingDesc}
                 onChange={(e) => setListingDesc(e.target.value)}
                 placeholder="Describe region, account specs, or how you deliver in-game items..."
-                className="w-full neu-pressed rounded-xl p-3.5 text-sm text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                className="w-full black-input rounded-xl p-3.5 text-sm text-white font-medium placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
               />
             </div>
 
@@ -679,7 +679,7 @@ export const SellerDashboardPage: React.FC = () => {
               <div className="space-y-1.5">
                 <label
                   htmlFor="seller-offer-price"
-                  className="block text-xs font-extrabold uppercase tracking-wider text-slate-900"
+                  className="block text-xs font-extrabold uppercase tracking-wider text-white"
                 >
                   Unit Price (USD) *
                 </label>
@@ -692,9 +692,9 @@ export const SellerDashboardPage: React.FC = () => {
                   required
                   value={listingPrice}
                   onChange={(e) => setListingPrice(e.target.value)}
-                  className="w-full neu-pressed rounded-xl px-3.5 py-2 text-sm text-slate-900 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                  className="w-full black-input rounded-xl px-3.5 py-2 text-sm text-white font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
-                <span className="text-[11px] font-mono font-semibold text-slate-600 block">
+                <span className="text-[11px] font-mono font-semibold text-neutral-400 block">
                   Shows as {formatPrice(Number(listingPrice) || 0)} ({currency})
                 </span>
               </div>
@@ -702,7 +702,7 @@ export const SellerDashboardPage: React.FC = () => {
               <div className="space-y-1.5">
                 <label
                   htmlFor="seller-offer-stock"
-                  className="block text-xs font-extrabold uppercase tracking-wider text-slate-900"
+                  className="block text-xs font-extrabold uppercase tracking-wider text-white"
                 >
                   Available Stock *
                 </label>
@@ -715,14 +715,14 @@ export const SellerDashboardPage: React.FC = () => {
                   required
                   value={listingStock}
                   onChange={(e) => setListingStock(e.target.value)}
-                  className="w-full neu-pressed rounded-xl px-3.5 py-2 text-sm text-slate-900 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                  className="w-full black-input rounded-xl px-3.5 py-2 text-sm text-white font-mono font-bold focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label
                   htmlFor="seller-offer-speed"
-                  className="block text-xs font-extrabold uppercase tracking-wider text-slate-900"
+                  className="block text-xs font-extrabold uppercase tracking-wider text-white"
                 >
                   Delivery Speed
                 </label>
@@ -730,7 +730,7 @@ export const SellerDashboardPage: React.FC = () => {
                   id="seller-offer-speed"
                   value={listingSpeed}
                   onChange={(e) => setListingSpeed(e.target.value)}
-                  className="w-full neu-pressed rounded-xl px-3.5 py-2 text-sm text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                  className="w-full black-input rounded-xl px-3.5 py-2 text-sm text-white font-semibold focus:outline-none focus:ring-2 focus:ring-pink-400"
                 >
                   {DELIVERY_SPEED_OPTIONS.map((sp) => (
                     <option key={sp} value={sp}>
@@ -743,7 +743,7 @@ export const SellerDashboardPage: React.FC = () => {
               <div className="space-y-1.5">
                 <label
                   htmlFor="seller-display-handle"
-                  className="block text-xs font-extrabold uppercase tracking-wider text-slate-900"
+                  className="block text-xs font-extrabold uppercase tracking-wider text-white"
                 >
                   Seller Display Handle
                 </label>
@@ -753,7 +753,7 @@ export const SellerDashboardPage: React.FC = () => {
                   maxLength={FIELD_LIMITS.SELLER_NAME_MAX}
                   value={listingSellerName}
                   onChange={(e) => setListingSellerName(e.target.value)}
-                  className="w-full neu-pressed rounded-xl px-3.5 py-2 text-sm text-slate-900 font-semibold focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                  className="w-full black-input rounded-xl px-3.5 py-2 text-sm text-white font-semibold focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
               </div>
             </div>
@@ -761,7 +761,7 @@ export const SellerDashboardPage: React.FC = () => {
             <div className="space-y-1.5">
               <label
                 htmlFor="seller-offer-image"
-                className="block text-xs font-extrabold uppercase tracking-wider text-slate-900"
+                className="block text-xs font-extrabold uppercase tracking-wider text-white"
               >
                 Offer Thumbnail (Optional Image URL or Upload)
               </label>
@@ -772,7 +772,7 @@ export const SellerDashboardPage: React.FC = () => {
                   value={listingImageUrl}
                   onChange={(e) => setListingImageUrl(e.target.value)}
                   placeholder="https://... or upload an image file"
-                  className="flex-1 neu-pressed rounded-xl px-3.5 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                  className="flex-1 black-input rounded-xl px-3.5 py-2 text-xs text-white font-medium placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
                 <label className="btn-pink px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
                   <Upload className="w-3.5 h-3.5" />
@@ -787,13 +787,13 @@ export const SellerDashboardPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-slate-200">
-              <label className="inline-flex items-center gap-2 text-xs font-bold text-slate-900 cursor-pointer">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-neutral-800">
+              <label className="inline-flex items-center gap-2 text-xs font-bold text-white cursor-pointer">
                 <input
                   type="checkbox"
                   checked={listingActive}
                   onChange={(e) => setListingActive(e.target.checked)}
-                  className="rounded accent-[#0F172A] w-4 h-4"
+                  className="rounded accent-pink-400 w-4 h-4"
                 />
                 <span>Active &amp; visible to buyers on storefront</span>
               </label>
@@ -819,21 +819,21 @@ export const SellerDashboardPage: React.FC = () => {
           </form>
 
           {/* My Listed Items */}
-          <div className="frosted-glass rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
-            <h2 className="font-display font-black text-lg text-[#0F172A]">
+          <div className="black-box rounded-3xl p-6 sm:p-8 border border-neutral-800 shadow-sm space-y-4 text-white">
+            <h2 className="font-display font-black text-lg text-white">
               My Listed Offers ({myListings.length})
             </h2>
 
             {myListings.length === 0 ? (
-              <div className="py-10 text-center space-y-2 text-slate-600">
-                <Package className="w-9 h-9 mx-auto text-slate-400" />
-                <div className="text-sm font-bold text-slate-900">No items listed yet</div>
-                <p className="text-xs max-w-sm mx-auto">
+              <div className="py-10 text-center space-y-2 text-neutral-300">
+                <Package className="w-9 h-9 mx-auto text-neutral-500" />
+                <div className="text-sm font-bold text-white">No items listed yet</div>
+                <p className="text-xs max-w-sm mx-auto text-neutral-400">
                   Use the form above to publish your first gaming offer with custom pricing and stock.
                 </p>
               </div>
             ) : (
-              <div className="divide-y divide-slate-200">
+              <div className="divide-y divide-neutral-800">
                 {myListings.map((item) => (
                   <div
                     key={item.id}
@@ -841,24 +841,24 @@ export const SellerDashboardPage: React.FC = () => {
                   >
                     <div className="space-y-1 min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2 text-xs">
-                        <span className="font-extrabold text-[#0F172A]">{item.gameTitle}</span>
-                        <span className="text-slate-400">·</span>
-                        <span className="font-semibold text-slate-700">{item.categoryName}</span>
-                        <span className="text-slate-400">·</span>
+                        <span className="font-extrabold text-pink-300">{item.gameTitle}</span>
+                        <span className="text-neutral-500">·</span>
+                        <span className="font-semibold text-neutral-300">{item.categoryName}</span>
+                        <span className="text-neutral-500">·</span>
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                             item.active
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                              : 'bg-slate-200 text-slate-700'
+                              ? 'bg-emerald-950 text-emerald-300 border border-emerald-700'
+                              : 'bg-neutral-800 text-neutral-300 border border-neutral-700'
                           }`}
                         >
                           {item.active ? 'Live' : 'Paused'}
                         </span>
                       </div>
-                      <div className="font-display font-black text-base text-[#0F172A] break-words">
+                      <div className="font-display font-black text-base text-white break-words">
                         {item.title}
                       </div>
-                      <div className="text-xs font-mono font-bold text-slate-700 tabular-nums">
+                      <div className="text-xs font-mono font-bold text-neutral-300 tabular-nums">
                         {formatPrice(item.price)} (${item.price.toFixed(2)} USD) · Stock: {item.stock} · {item.deliverySpeed}
                       </div>
                     </div>
@@ -893,14 +893,14 @@ export const SellerDashboardPage: React.FC = () => {
                             sellerUid: item.sellerUid,
                           })
                         }
-                        className="px-3 py-1.5 rounded-full neu-flat text-xs font-bold text-slate-800 border border-slate-300"
+                        className="px-3 py-1.5 rounded-full black-subbox text-xs font-bold text-white border border-neutral-700"
                       >
                         {item.active ? 'Pause' : 'Activate'}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleStartEdit(item)}
-                        className="p-2 rounded-full neu-flat text-[#0F172A] border border-slate-300 hover:bg-[#FFF0F5]"
+                        className="p-2 rounded-full black-subbox text-white border border-neutral-700 hover:border-pink-400"
                         aria-label={`Edit ${item.title}`}
                         title="Edit offer"
                       >
@@ -921,7 +921,7 @@ export const SellerDashboardPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setConfirmDeleteId(null)}
-                            className="px-2 py-1.5 rounded-full neu-flat text-[11px] font-bold text-slate-700"
+                            className="px-2 py-1.5 rounded-full black-subbox text-[11px] font-bold text-neutral-200 border border-neutral-700"
                           >
                             Cancel
                           </button>
@@ -930,7 +930,7 @@ export const SellerDashboardPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setConfirmDeleteId(item.id)}
-                          className="p-2 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200"
+                          className="p-2 rounded-full bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800"
                           aria-label={`Delete ${item.title}`}
                           title="Delete offer"
                         >
@@ -948,13 +948,13 @@ export const SellerDashboardPage: React.FC = () => {
 
       {/* TAB 2: INCOMING BUYER ORDERS */}
       {activeTab === 'orders' && (
-        <div className="frosted-glass-strong rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        <div className="black-box-strong rounded-3xl p-6 sm:p-8 border border-neutral-800 shadow-sm space-y-6 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="font-display font-black text-xl text-[#0F172A]">
+              <h2 className="font-display font-black text-xl text-white">
                 Incoming Buyer Orders ({filteredSellerOrders.length})
               </h2>
-              <p className="text-xs text-slate-700 font-medium mt-0.5">
+              <p className="text-xs text-neutral-300 font-medium mt-0.5">
                 Deliver items using the buyer&apos;s instructions, message them directly, and mark orders Completed to credit your wallet.
               </p>
             </div>
@@ -966,7 +966,7 @@ export const SellerDashboardPage: React.FC = () => {
                   type="button"
                   onClick={() => setOrderStatusFilter(st)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
-                    orderStatusFilter === st ? 'btn-navy' : 'neu-flat text-slate-800 border border-slate-300'
+                    orderStatusFilter === st ? 'btn-navy' : 'black-subbox text-neutral-200 border border-neutral-700'
                   }`}
                 >
                   {st}
@@ -976,10 +976,10 @@ export const SellerDashboardPage: React.FC = () => {
           </div>
 
           {filteredSellerOrders.length === 0 ? (
-            <div className="py-12 text-center space-y-2 text-slate-600">
-              <ShoppingBag className="w-9 h-9 mx-auto text-slate-400" />
-              <div className="text-sm font-bold text-slate-900">No incoming orders yet</div>
-              <p className="text-xs max-w-sm mx-auto">
+            <div className="py-12 text-center space-y-2 text-neutral-300">
+              <ShoppingBag className="w-9 h-9 mx-auto text-neutral-500" />
+              <div className="text-sm font-bold text-white">No incoming orders yet</div>
+              <p className="text-xs max-w-sm mx-auto text-neutral-400">
                 Orders placed by buyers on your listings will appear here in real time.
               </p>
             </div>
@@ -992,36 +992,36 @@ export const SellerDashboardPage: React.FC = () => {
                 return (
                   <div
                     key={order.id}
-                    className="neu-flat rounded-2xl p-5 border border-slate-200 flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+                    className="black-subbox rounded-2xl p-5 border border-neutral-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4"
                   >
                     <div className="space-y-2 min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 font-semibold">
-                        <span className="font-mono font-extrabold text-[#0F172A]">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-400 font-semibold">
+                        <span className="font-mono font-extrabold text-white">
                           #{order.id.slice(0, 10).toUpperCase()}
                         </span>
                         <span>·</span>
-                        <span className="font-bold text-slate-900">{order.gameTitle}</span>
+                        <span className="font-bold text-pink-300">{order.gameTitle}</span>
                         <span>·</span>
                         <span>{order.categoryName}</span>
                         <span>·</span>
                         <span>Buyer: {order.buyerName}</span>
                       </div>
 
-                      <div className="font-display font-black text-base text-[#0F172A] break-words">
+                      <div className="font-display font-black text-base text-white break-words">
                         {order.listingTitle} (Qty: {order.quantity})
                       </div>
 
-                      <div className="neu-pressed rounded-xl px-3.5 py-2 text-xs text-slate-900 font-semibold border border-slate-300 break-words">
+                      <div className="black-input rounded-xl px-3.5 py-2 text-xs text-neutral-200 font-semibold break-words">
                         Buyer Delivery Notes: {order.deliveryInstructions}
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-start lg:items-end gap-3 shrink-0 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-200">
+                    <div className="flex flex-col items-start lg:items-end gap-3 shrink-0 border-t lg:border-t-0 pt-3 lg:pt-0 border-neutral-800">
                       <div className="text-left lg:text-right">
-                        <div className="font-mono font-black text-lg text-[#0F172A]">
+                        <div className="font-mono font-black text-lg text-white">
                           {formatPrice(order.totalPrice)}
                         </div>
-                        <div className="text-[11px] font-mono font-bold text-emerald-700">
+                        <div className="text-[11px] font-mono font-bold text-emerald-400">
                           Payout: {formatInr(payoutInr)}
                         </div>
                       </div>
@@ -1075,7 +1075,7 @@ export const SellerDashboardPage: React.FC = () => {
                                   setProcessingOrderId(null);
                                 }
                               }}
-                              className="px-3 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200"
+                              className="px-3 py-1.5 rounded-full bg-rose-950 hover:bg-rose-900 text-rose-300 text-xs font-bold border border-rose-800"
                             >
                               Cancel
                             </button>
@@ -1083,14 +1083,14 @@ export const SellerDashboardPage: React.FC = () => {
                         )}
 
                         {order.status === 'Completed' && (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-300">
+                          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-300 bg-emerald-950 px-3 py-1 rounded-full border border-emerald-700">
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>Completed</span>
                           </span>
                         )}
 
                         {order.status === 'Cancelled' && (
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-800 bg-rose-50 px-3 py-1 rounded-full border border-rose-300">
+                          <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-300 bg-rose-950 px-3 py-1 rounded-full border border-rose-700">
                             <XCircle className="w-3.5 h-3.5" />
                             <span>Cancelled</span>
                           </span>
@@ -1107,13 +1107,13 @@ export const SellerDashboardPage: React.FC = () => {
 
       {/* TAB 3: WALLET & PAYOUT HISTORY */}
       {activeTab === 'payouts' && (
-        <div className="frosted-glass-strong rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
+        <div className="black-box-strong rounded-3xl p-6 sm:p-8 border border-neutral-800 shadow-sm space-y-5 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="font-display font-black text-xl text-[#0F172A]">
+              <h2 className="font-display font-black text-xl text-white">
                 Recent Sales &amp; Withdrawal Activity
               </h2>
-              <p className="text-xs text-slate-700 font-medium">
+              <p className="text-xs text-neutral-300 font-medium">
                 Track all completed sale credits and payout withdrawal requests.
               </p>
             </div>
@@ -1131,11 +1131,11 @@ export const SellerDashboardPage: React.FC = () => {
           </div>
 
           {walletTransactions.length === 0 ? (
-            <div className="py-10 text-center text-slate-600 text-xs font-medium">
+            <div className="py-10 text-center text-neutral-400 text-xs font-medium">
               No wallet transactions recorded yet. Complete orders to receive sales payouts.
             </div>
           ) : (
-            <div className="divide-y divide-slate-200">
+            <div className="divide-y divide-neutral-800">
               {walletTransactions.map((tx) => {
                 const isCredit = tx.type === 'Deposit' || tx.type === 'Sale';
                 return (
@@ -1144,8 +1144,8 @@ export const SellerDashboardPage: React.FC = () => {
                       <div
                         className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                           isCredit
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-rose-100 text-rose-800'
+                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                            : 'bg-rose-950 text-rose-300 border border-rose-800'
                         }`}
                       >
                         {isCredit ? (
@@ -1155,10 +1155,10 @@ export const SellerDashboardPage: React.FC = () => {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <div className="text-xs font-extrabold text-slate-900 truncate">
+                        <div className="text-xs font-extrabold text-white truncate">
                           {tx.description || tx.type}
                         </div>
-                        <div className="text-[11px] font-mono text-slate-600">
+                        <div className="text-[11px] font-mono text-neutral-400">
                           {tx.type} · {tx.status} ·{' '}
                           {tx.createdAt?.toDate ? tx.createdAt.toDate().toLocaleString() : 'Just now'}
                         </div>
@@ -1168,7 +1168,7 @@ export const SellerDashboardPage: React.FC = () => {
                     <div className="text-right shrink-0">
                       <div
                         className={`font-mono text-sm font-black ${
-                          isCredit ? 'text-emerald-700' : 'text-slate-900'
+                          isCredit ? 'text-emerald-400' : 'text-white'
                         }`}
                       >
                         {isCredit ? '+' : '-'}{formatInr(tx.amountInr)}
@@ -1184,17 +1184,17 @@ export const SellerDashboardPage: React.FC = () => {
 
       {/* Quick Withdraw Modal */}
       {showWithdrawModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+          <div className="bg-black text-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-neutral-800">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-display font-black text-lg text-slate-900 flex items-center gap-2">
-                <ArrowUpRight className="w-5 h-5 text-[#0F172A]" />
+              <h3 className="font-display font-black text-lg text-white flex items-center gap-2">
+                <ArrowUpRight className="w-5 h-5 text-pink-300" />
                 <span>Withdraw Seller Earnings</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowWithdrawModal(false)}
-                className="text-slate-500 hover:text-slate-900 p-1 font-bold"
+                className="text-neutral-400 hover:text-white p-1 font-bold"
                 aria-label="Close modal"
               >
                 ✕
@@ -1202,13 +1202,13 @@ export const SellerDashboardPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleWithdrawSubmit} className="space-y-4">
-              <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center justify-between font-bold">
+              <div className="p-3 rounded-xl bg-amber-950 border border-amber-700 text-amber-200 text-xs flex items-center justify-between font-bold">
                 <span>Minimum Withdrawal:</span>
-                <span className="font-mono font-black">₹{minWithdrawalInr.toLocaleString()} INR</span>
+                <span className="font-mono font-black text-white">₹{minWithdrawalInr.toLocaleString()} INR</span>
               </div>
 
               {withdrawError && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold">
+                <div className="p-3 rounded-xl bg-rose-950 border border-rose-800 text-rose-200 text-xs font-bold">
                   {withdrawError}
                 </div>
               )}
@@ -1216,7 +1216,7 @@ export const SellerDashboardPage: React.FC = () => {
               <div>
                 <label
                   htmlFor="seller-withdraw-amount"
-                  className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1"
+                  className="block text-xs font-extrabold uppercase tracking-wider text-white mb-1"
                 >
                   Amount (INR) *
                 </label>
@@ -1228,9 +1228,9 @@ export const SellerDashboardPage: React.FC = () => {
                   required
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-                  className="w-full neu-pressed rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0F172A]"
+                  className="w-full black-input rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-white focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
-                <div className="text-[11px] font-mono text-slate-600 mt-1">
+                <div className="text-[11px] font-mono text-neutral-400 mt-1">
                   Available: {formatInr(balanceInr)} (≈ {formatPrice(balanceInUsd)})
                 </div>
               </div>
@@ -1238,7 +1238,7 @@ export const SellerDashboardPage: React.FC = () => {
               <div>
                 <label
                   htmlFor="seller-payout-dest"
-                  className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1"
+                  className="block text-xs font-extrabold uppercase tracking-wider text-white mb-1"
                 >
                   Payout Destination (Bank / UPI / PayPal) *
                 </label>
@@ -1250,7 +1250,7 @@ export const SellerDashboardPage: React.FC = () => {
                   value={payoutDetails}
                   onChange={(e) => setPayoutDetails(e.target.value)}
                   placeholder="e.g. UPI: name@okaxis or Bank IFSC + Account Number"
-                  className="w-full neu-pressed rounded-xl px-4 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#0F172A] resize-none"
+                  className="w-full black-input rounded-xl px-4 py-2 text-xs text-white font-medium placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-400 resize-none"
                 />
               </div>
 

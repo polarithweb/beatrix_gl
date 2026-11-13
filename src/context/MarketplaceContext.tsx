@@ -1105,11 +1105,15 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
       const safeSlug = sanitizeSlug(catalogueGame.slug || catalogueGame.title, FIELD_LIMITS.GAME_TITLE_MAX);
       const docId = `cat_${safeSlug}`.slice(0, 128);
       const title = sanitizeText(catalogueGame.title, FIELD_LIMITS.GAME_TITLE_MAX);
+      const iconUrl =
+        catalogueGame.iconUrl && isValidImageUrlOrDataUri(catalogueGame.iconUrl)
+          ? catalogueGame.iconUrl.trim().slice(0, FIELD_LIMITS.IMAGE_URL_MAX)
+          : '';
       try {
         await setDoc(doc(db, 'games', docId), {
           title,
           slug: safeSlug,
-          iconUrl: '',
+          iconUrl,
           bannerUrl: '',
           featured: false,
           categoryIds: [],
@@ -1121,7 +1125,7 @@ export const MarketplaceProvider: React.FC<{ children: React.ReactNode }> = ({ c
           id: docId,
           title,
           slug: safeSlug,
-          iconUrl: '',
+          iconUrl,
           bannerUrl: '',
           featured: false,
           categoryIds: [],

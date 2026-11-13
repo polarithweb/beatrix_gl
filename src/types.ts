@@ -237,6 +237,8 @@ export function sanitizeSlug(input: string, maxLength = 60): string {
   return cleaned || 'item';
 }
 
+export const DEFAULT_BRAND_LOGO_PATH = 'assets/aistudio/IMG_20261113_114213_0165f38a.jpg';
+
 /**
  * Validates that a URL is either empty, a valid http(s) URL, a local asset path, or a safe image data URI.
  */
@@ -245,7 +247,7 @@ export function isValidImageUrlOrDataUri(value: string): boolean {
   if (!trimmed) return true;
   if (trimmed.length > FIELD_LIMITS.IMAGE_URL_MAX) return false;
   if (trimmed.startsWith('data:image/')) return true;
-  if (trimmed.startsWith('/')) return true;
+  if (trimmed.startsWith('/') || trimmed.startsWith('./')) return true;
   try {
     const parsed = new URL(trimmed);
     return parsed.protocol === 'https:' || parsed.protocol === 'http:';

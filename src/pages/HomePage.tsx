@@ -87,6 +87,7 @@ export const HomePage: React.FC = () => {
   const [searchFilter, setSearchFilter] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [bannerLoadError, setBannerLoadError] = useState(false);
+  const [failedLogoSlugs, setFailedLogoSlugs] = useState<Record<string, boolean>>({});
 
   // Swipeable Tilted Stack State for Trust Cards (Gestures Only)
   const [activeTrustIndex, setActiveTrustIndex] = useState(0);
@@ -144,13 +145,17 @@ export const HomePage: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Merge Firestore games with 338 catalogue titles for live text-only search suggestions
+  // Merge Firestore games with catalogue titles for live search suggestions
   const searchableGamesList = useMemo(() => {
     const combined = new Map<string, Game>();
     games.forEach((g) => combined.set(g.slug.toLowerCase(), g));
     catalogueGames.forEach((g) => {
-      if (!combined.has(g.slug.toLowerCase())) {
-        combined.set(g.slug.toLowerCase(), g);
+      const key = g.slug.toLowerCase();
+      const existing = combined.get(key);
+      if (!existing) {
+        combined.set(key, g);
+      } else if (!existing.iconUrl && g.iconUrl) {
+        combined.set(key, { ...existing, iconUrl: g.iconUrl });
       }
     });
     return Array.from(combined.values());
@@ -384,13 +389,13 @@ export const HomePage: React.FC = () => {
   if (loadingData) {
     return (
       <main className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 py-10 space-y-10 min-w-0 overflow-x-hidden">
-        <div className="h-[420px] rounded-3xl frosted-glass animate-pulse" />
-        <div className="h-12 w-full max-w-sm rounded-2xl frosted-glass animate-pulse" />
+        <div className="h-[420px] rounded-3xl black-box animate-pulse" />
+        <div className="h-12 w-full max-w-sm rounded-2xl black-box animate-pulse" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((n) => (
             <div
               key={n}
-              className="h-64 rounded-2xl frosted-glass animate-pulse"
+              className="h-64 rounded-2xl black-box animate-pulse"
             />
           ))}
         </div>
@@ -399,7 +404,7 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <main className="w-full max-w-full space-y-12 sm:space-y-16 pb-20 overflow-x-hidden min-w-0">
+    <main className="w-full max-w-full pb-20 overflow-x-hidden min-w-0">
       {/* =========================================================================
           1. Hero Section: Full-Width Edge-to-Edge Directly Under Beatrix.gl Bar
              Diluted atmospheric blend fading seamlessly downwards with zero visible line
@@ -486,7 +491,7 @@ export const HomePage: React.FC = () => {
           2. Interactive Tilted & Swipeable Cards: Directly on Background
              (NO special box behind, NO serial number, NO buttons, ONLY heading + text, SWIPE ONLY)
          ========================================================================= */}
-      <section className="relative w-full max-w-[1400px] mx-auto px-4 sm:px-6 pt-2">
+      <section className="relative z-10 w-full max-w-[1400px] mx-auto px-4 sm:px-6 -mt-16 sm:-mt-28 md:-mt-36 lg:-mt-40">
         <div className="relative w-full max-w-[460px] mx-auto h-[220px] sm:h-[240px] flex items-center justify-center perspective-[1200px] select-none touch-none">
           {TRUST_CARDS.map((card, idx) => {
             const offset = (idx - activeTrustIndex + TRUST_CARDS.length) % TRUST_CARDS.length;
@@ -532,12 +537,12 @@ export const HomePage: React.FC = () => {
                       ? 'none'
                       : 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease',
                 }}
-                className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-8 flex flex-col justify-center frosted-glass-strong border border-slate-200/90 shadow-[0_16px_36px_rgba(15,23,42,0.08),0_4px_16px_rgba(244,114,182,0.12)]"
+                className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-8 flex flex-col justify-center black-box-strong border border-neutral-800 shadow-[0_16px_36px_rgba(0,0,0,0.45),0_4px_16px_rgba(244,114,182,0.14)]"
               >
-                <h3 className="font-brand font-normal text-2xl sm:text-3xl text-[#0F172A] tracking-wide">
+                <h3 className="font-brand font-normal text-2xl sm:text-3xl text-white tracking-wide">
                   {card.title}
                 </h3>
-                <p className="mt-2.5 sm:mt-3 font-editorial font-semibold text-sm sm:text-base text-slate-800 leading-relaxed">
+                <p className="mt-2.5 sm:mt-3 font-editorial font-semibold text-sm sm:text-base text-neutral-200 leading-relaxed">
                   {card.text}
                 </p>
               </div>
@@ -559,12 +564,12 @@ export const HomePage: React.FC = () => {
                   opacity: item.flying ? 0 : 1,
                   transition: 'transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease',
                 }}
-                className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-8 flex flex-col justify-center frosted-glass-strong border border-slate-200/90 shadow-[0_16px_36px_rgba(15,23,42,0.08),0_4px_16px_rgba(244,114,182,0.12)] pointer-events-none"
+                className="absolute inset-0 w-full h-full rounded-3xl p-6 sm:p-8 flex flex-col justify-center black-box-strong border border-neutral-800 shadow-[0_16px_36px_rgba(0,0,0,0.45),0_4px_16px_rgba(244,114,182,0.14)] pointer-events-none"
               >
-                <h3 className="font-brand font-normal text-2xl sm:text-3xl text-[#0F172A] tracking-wide">
+                <h3 className="font-brand font-normal text-2xl sm:text-3xl text-white tracking-wide">
                   {item.card.title}
                 </h3>
-                <p className="mt-2.5 sm:mt-3 font-editorial font-semibold text-sm sm:text-base text-slate-800 leading-relaxed">
+                <p className="mt-2.5 sm:mt-3 font-editorial font-semibold text-sm sm:text-base text-neutral-200 leading-relaxed">
                   {item.card.text}
                 </p>
               </div>
@@ -579,7 +584,7 @@ export const HomePage: React.FC = () => {
          ========================================================================= */}
       <section
         aria-label="Popular Games"
-        className="relative w-full max-w-[1400px] mx-auto px-4 sm:px-6 space-y-6 min-w-0"
+        className="relative w-full max-w-[1400px] mx-auto px-4 sm:px-6 mt-12 sm:mt-16 space-y-6 min-w-0"
       >
         <div className="text-center">
           <h2 className="font-vintage italic font-bold text-2xl sm:text-3xl lg:text-4xl text-[#0F172A] tracking-tight">
@@ -659,7 +664,7 @@ export const HomePage: React.FC = () => {
                       ? 'none'
                       : 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease',
                 }}
-                className="absolute inset-0 w-full h-full rounded-3xl overflow-hidden bg-slate-950 border border-slate-200/90 shadow-[0_20px_45px_rgba(15,23,42,0.14),0_6px_20px_rgba(244,114,182,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F172A]"
+                className="absolute inset-0 w-full h-full rounded-3xl overflow-hidden bg-black border border-neutral-800 shadow-[0_20px_45px_rgba(0,0,0,0.45),0_6px_20px_rgba(244,114,182,0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
                 <img
                   src={gameCard.imageUrl}
@@ -696,7 +701,7 @@ export const HomePage: React.FC = () => {
                   opacity: item.flying ? 0 : 1,
                   transition: 'transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.24s ease',
                 }}
-                className="absolute inset-0 w-full h-full rounded-3xl overflow-hidden bg-slate-950 border border-slate-200/90 shadow-[0_20px_45px_rgba(15,23,42,0.14),0_6px_20px_rgba(244,114,182,0.16)] pointer-events-none"
+                className="absolute inset-0 w-full h-full rounded-3xl overflow-hidden bg-black border border-neutral-800 shadow-[0_20px_45px_rgba(0,0,0,0.45),0_6px_20px_rgba(244,114,182,0.16)] pointer-events-none"
               >
                 <img
                   src={item.card.imageUrl}
@@ -724,7 +729,7 @@ export const HomePage: React.FC = () => {
           4. Live Game Search Suggestions (338 Text Catalogue) & Active Marketplace Offers
              (NO game grid dump)
          ========================================================================= */}
-      <section className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 space-y-6 min-w-0">
+      <section className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 mt-12 sm:mt-16 space-y-6 min-w-0">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div>
             <h2 className="font-display font-bold text-xl sm:text-2xl lg:text-3xl text-[#0F172A] tracking-tight">
@@ -737,7 +742,7 @@ export const HomePage: React.FC = () => {
 
           {/* Search Input with Live Text-Only Game Suggestions */}
           <div ref={searchContainerRef} className="relative w-full lg:w-96 min-w-0">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none shrink-0 z-10" />
+            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none shrink-0 z-10" />
             <input
               type="text"
               value={searchFilter}
@@ -755,7 +760,7 @@ export const HomePage: React.FC = () => {
               aria-label="Search any game or offer"
               aria-expanded={searchFocused && searchSuggestions.length > 0}
               aria-autocomplete="list"
-              className="w-full neu-pressed rounded-full pl-10 pr-9 py-2.5 text-xs sm:text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F172A] transition-all"
+              className="w-full black-input rounded-full pl-10 pr-9 py-2.5 text-xs sm:text-sm text-white font-semibold placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-white transition-all"
             />
             {searchFilter && (
               <button
@@ -765,7 +770,7 @@ export const HomePage: React.FC = () => {
                   setSearchFocused(false);
                 }}
                 aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-slate-500 hover:text-slate-900 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-neutral-400 hover:text-white transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -776,10 +781,10 @@ export const HomePage: React.FC = () => {
               <div
                 role="listbox"
                 aria-label="Game search suggestions"
-                className="absolute left-0 right-0 top-full mt-2 z-30 bg-white/95 backdrop-blur-xl rounded-2xl border border-pink-200/90 shadow-[0_16px_36px_rgba(15,23,42,0.14)] overflow-hidden divide-y divide-slate-100"
+                className="absolute left-0 right-0 top-full mt-2 z-30 bg-black/95 backdrop-blur-xl rounded-2xl border border-neutral-800 shadow-[0_16px_36px_rgba(0,0,0,0.55)] overflow-hidden divide-y divide-neutral-800"
               >
                 {searchSuggestions.length === 0 ? (
-                  <div className="px-4 py-3 text-xs font-medium text-slate-600">
+                  <div className="px-4 py-3 text-xs font-medium text-neutral-300">
                     No matching games found for &ldquo;{searchFilter.trim()}&rdquo;
                   </div>
                 ) : (
@@ -794,10 +799,29 @@ export const HomePage: React.FC = () => {
                         setSearchFilter('');
                         navigate(`/game/${g.slug}`);
                       }}
-                      className="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-semibold text-[#0F172A] hover:bg-[#FFF0F5] transition-colors flex items-center justify-between gap-2"
+                      className="w-full text-left px-4 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-neutral-900 transition-colors flex items-center justify-between gap-2"
                     >
-                      <span className="truncate">{g.title}</span>
-                      <span className="text-[11px] font-bold text-pink-700 shrink-0">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {g.iconUrl && !failedLogoSlugs[g.slug] ? (
+                          <img
+                            src={g.iconUrl}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                            referrerPolicy="no-referrer"
+                            onError={() =>
+                              setFailedLogoSlugs((prev) => ({ ...prev, [g.slug]: true }))
+                            }
+                            className="w-7 h-7 rounded-lg object-cover bg-neutral-900 border border-neutral-700 shrink-0"
+                          />
+                        ) : (
+                          <div className="w-7 h-7 rounded-lg btn-navy text-white text-xs font-bold flex items-center justify-center shrink-0">
+                            {g.title.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span className="truncate">{g.title}</span>
+                      </div>
+                      <span className="text-[11px] font-bold text-pink-300 shrink-0">
                         View Market
                       </span>
                     </button>
@@ -808,7 +832,7 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Dynamic Category Filter Bar (Navy & Light Pink Pills) */}
+        {/* Dynamic Category Filter Bar */}
         <div className="flex flex-wrap items-center gap-2 pt-1">
           <button
             type="button"
@@ -816,7 +840,7 @@ export const HomePage: React.FC = () => {
             className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
               selectedCategoryId === 'all'
                 ? 'btn-navy text-white shadow-xs'
-                : 'bg-white/90 hover:bg-[#FFF0F5] text-[#0F172A] border border-pink-200/90 hover:border-[#0F172A] shadow-xs'
+                : 'bg-black hover:bg-neutral-900 text-white border border-neutral-800 hover:border-pink-300 shadow-xs'
             }`}
           >
             All Categories
@@ -832,7 +856,7 @@ export const HomePage: React.FC = () => {
                 className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
                   active
                     ? 'btn-navy text-white shadow-xs'
-                    : 'bg-white/90 hover:bg-[#FFF0F5] text-[#0F172A] border border-pink-200/90 hover:border-[#0F172A] shadow-xs'
+                    : 'bg-black hover:bg-neutral-900 text-white border border-neutral-800 hover:border-pink-300 shadow-xs'
                 }`}
               >
                 {cat.name}
@@ -844,7 +868,7 @@ export const HomePage: React.FC = () => {
             <button
               type="button"
               onClick={() => setFilterGameSlug('all')}
-              className="px-4 py-2 rounded-full text-xs font-bold bg-[#FFF0F5] text-[#0F172A] border border-pink-300 hover:border-[#0F172A] inline-flex items-center gap-1.5 transition-all"
+              className="px-4 py-2 rounded-full text-xs font-bold bg-black text-white border border-neutral-700 hover:border-pink-300 inline-flex items-center gap-1.5 transition-all"
             >
               <span>Game filter active</span>
               <X className="w-3.5 h-3.5" />
@@ -854,13 +878,13 @@ export const HomePage: React.FC = () => {
 
         {/* Active Marketplace Offers Grid */}
         {activeListings.length === 0 ? (
-          <div className="frosted-glass rounded-3xl p-8 sm:p-10 text-center max-w-xl mx-auto space-y-2.5 border border-slate-300">
-            <PackageOpen className="w-8 h-8 text-[#0F172A] mx-auto" />
-            <h3 className="font-display font-bold text-base text-slate-900">
+          <div className="black-box rounded-3xl p-8 sm:p-10 text-center max-w-xl mx-auto space-y-2.5 border border-neutral-800">
+            <PackageOpen className="w-8 h-8 text-white mx-auto" />
+            <h3 className="font-display font-bold text-base text-white">
               No active marketplace offers match right now
             </h3>
-            <p className="text-xs text-slate-700 font-medium">
-              Search any of our 338 games above or adjust your category filter.
+            <p className="text-xs text-neutral-300 font-medium">
+              Search any of our {catalogueGames.length} games above or adjust your category filter.
             </p>
             {(selectedCategoryId !== 'all' || filterGameSlug !== 'all' || searchFilter) && (
               <button
@@ -882,19 +906,19 @@ export const HomePage: React.FC = () => {
               <Link
                 key={offer.id}
                 to={`/listing/${offer.id}`}
-                className="group frosted-glass hover:frosted-glass-strong rounded-2xl p-5 flex flex-col justify-between gap-4 border border-slate-200 hover:border-slate-400 hover:shadow-[0_12px_28px_rgba(15,23,42,0.12)] transition-all duration-200 hover:-translate-y-1 w-full min-w-0"
+                className="group black-box hover:black-box-strong rounded-2xl p-5 flex flex-col justify-between gap-4 border border-neutral-800 hover:border-neutral-600 hover:shadow-[0_14px_32px_rgba(0,0,0,0.5)] transition-all duration-200 hover:-translate-y-1 w-full min-w-0"
               >
                 <div className="space-y-3 min-w-0">
-                  <div className="flex items-center justify-between text-xs text-slate-700 font-medium gap-2 min-w-0">
+                  <div className="flex items-center justify-between text-xs text-neutral-300 font-medium gap-2 min-w-0">
                     <div className="flex items-center gap-1.5 truncate min-w-0">
-                      <span className="font-bold text-[#0F172A] truncate">
+                      <span className="font-bold text-white truncate">
                         {offer.gameTitle}
                       </span>
-                      <span aria-hidden="true" className="shrink-0 text-slate-400">·</span>
-                      <span className="truncate font-semibold text-slate-700">{offer.categoryName}</span>
+                      <span aria-hidden="true" className="shrink-0 text-neutral-600">·</span>
+                      <span className="truncate font-semibold text-neutral-300">{offer.categoryName}</span>
                     </div>
-                    <div className="flex items-center gap-1 text-emerald-800 font-bold shrink-0">
-                      <Clock className="w-3.5 h-3.5 shrink-0 text-emerald-700" />
+                    <div className="flex items-center gap-1 text-emerald-400 font-bold shrink-0">
+                      <Clock className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
                       <span>{offer.deliverySpeed}</span>
                     </div>
                   </div>
@@ -905,38 +929,38 @@ export const HomePage: React.FC = () => {
                         src={offer.imageUrl}
                         alt={offer.title}
                         referrerPolicy="no-referrer"
-                        className="w-14 h-14 rounded-xl object-cover bg-slate-100 border border-slate-300 shadow-xs shrink-0"
+                        className="w-14 h-14 rounded-xl object-cover bg-neutral-900 border border-neutral-700 shadow-xs shrink-0"
                       />
                     )}
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-vintage font-bold text-sm sm:text-base text-[#0F172A] group-hover:text-blue-900 transition-colors line-clamp-2 break-words">
+                      <h3 className="font-vintage font-bold text-sm sm:text-base text-white group-hover:text-pink-300 transition-colors line-clamp-2 break-words">
                         {offer.title}
                       </h3>
-                      <p className="text-xs text-slate-700 font-medium line-clamp-2 mt-1 break-words">
+                      <p className="text-xs text-neutral-300 font-medium line-clamp-2 mt-1 break-words">
                         {offer.description}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-3.5 border-t border-slate-200 flex items-center justify-between gap-3 min-w-0">
-                  <div className="text-xs text-slate-700 flex items-center gap-1.5 min-w-0 truncate">
-                    <span className="text-[#0F172A] font-bold truncate">
+                <div className="pt-3.5 border-t border-neutral-800 flex items-center justify-between gap-3 min-w-0">
+                  <div className="text-xs text-neutral-300 flex items-center gap-1.5 min-w-0 truncate">
+                    <span className="text-white font-bold truncate">
                       {offer.sellerName}
                     </span>
-                    <span aria-hidden="true" className="shrink-0 text-slate-400">·</span>
-                    <span className="inline-flex items-center gap-0.5 text-slate-900 font-mono font-bold tabular-nums shrink-0">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-500 shrink-0" />
+                    <span aria-hidden="true" className="shrink-0 text-neutral-600">·</span>
+                    <span className="inline-flex items-center gap-0.5 text-white font-mono font-bold tabular-nums shrink-0">
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400 shrink-0" />
                       {Number(offer.sellerRating).toFixed(1)}
                     </span>
-                    <span aria-hidden="true" className="shrink-0 text-slate-400">·</span>
-                    <span className="font-mono tabular-nums text-slate-600 font-semibold shrink-0">
+                    <span aria-hidden="true" className="shrink-0 text-neutral-600">·</span>
+                    <span className="font-mono tabular-nums text-neutral-300 font-semibold shrink-0">
                       {offer.stock} left
                     </span>
                   </div>
 
                   <div className="text-right shrink-0">
-                    <div className="font-mono font-black text-base sm:text-lg text-[#0F172A] tabular-nums">
+                    <div className="font-mono font-black text-base sm:text-lg text-white tabular-nums">
                       {formatPrice(offer.price)}
                     </div>
                   </div>

@@ -29,6 +29,7 @@ import {
 import { useMarketplace } from '../context/MarketplaceContext';
 import {
   Category,
+  DEFAULT_BRAND_LOGO_PATH,
   Game,
   Listing,
   OrderStatus,
@@ -100,6 +101,10 @@ export const AdminPage: React.FC = () => {
   const [legalLinksText, setLegalLinksText] = useState('');
   const [copyrightText, setCopyrightText] = useState('');
   const [savingSettings, setSavingSettings] = useState(false);
+  const [adminLogoError, setAdminLogoError] = useState(false);
+
+  const defaultBrandLogoSrc = `${import.meta.env.BASE_URL}${DEFAULT_BRAND_LOGO_PATH}`;
+  const activePreviewLogoSrc = logoUrl.trim() || defaultBrandLogoSrc;
 
   useEffect(() => {
     if (siteSettings) {
@@ -511,9 +516,18 @@ export const AdminPage: React.FC = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl btn-navy flex items-center justify-center text-white font-display font-black text-base shadow-sm">
-                B
-              </div>
+              {!adminLogoError ? (
+                <img
+                  src={defaultBrandLogoSrc}
+                  alt="Beatrix.gl"
+                  onError={() => setAdminLogoError(true)}
+                  className="w-9 h-9 rounded-xl object-cover border border-slate-300 shadow-sm shrink-0 bg-slate-950"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-xl btn-navy flex items-center justify-center text-white font-display font-black text-base shadow-sm">
+                  B
+                </div>
+              )}
               <div>
                 <div className="font-display font-black text-sm text-slate-900">
                   Admin Control Center
@@ -794,14 +808,14 @@ export const AdminPage: React.FC = () => {
               {/* Logo URL / Upload */}
               <div className="space-y-2">
                 <label className="block text-xs font-semibold text-slate-700">
-                  Site Logo Image (Paste URL or Upload File)
+                  Site Logo Image (Leave empty for default Beatrix.gl logo, paste URL, or upload file)
                 </label>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <input
                     type="text"
                     value={logoUrl}
                     onChange={(e) => setLogoUrl(e.target.value)}
-                    placeholder="https://... or upload an image file"
+                    placeholder="Leave empty for default Beatrix.gl logo, or paste URL..."
                     className="flex-1 neu-pressed rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-pink-300"
                   />
                   <label className="px-4 py-2.5 rounded-xl neu-flat text-xs font-semibold text-pink-600 flex items-center justify-center gap-2 cursor-pointer shrink-0">
@@ -814,6 +828,17 @@ export const AdminPage: React.FC = () => {
                       className="hidden"
                     />
                   </label>
+                </div>
+                <div className="flex items-center gap-3 pt-1">
+                  <img
+                    src={activePreviewLogoSrc}
+                    alt="Active site logo preview"
+                    referrerPolicy="no-referrer"
+                    className="w-11 h-11 rounded-xl object-cover border border-pink-200 bg-slate-950 shadow-xs"
+                  />
+                  <span className="text-xs text-slate-600 font-medium">
+                    {logoUrl.trim() ? 'Custom logo active' : 'Default Beatrix.gl logo active'}
+                  </span>
                 </div>
               </div>
 

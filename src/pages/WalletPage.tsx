@@ -103,14 +103,14 @@ export const WalletPage: React.FC = () => {
   if (!user) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
-        <div className="frosted-glass-strong rounded-3xl p-8 border border-slate-200 shadow-[0_12px_36px_rgba(15,23,42,0.12)]">
-          <div className="w-16 h-16 neu-circle mx-auto flex items-center justify-center text-[#0F172A] bg-slate-100 mb-4">
+        <div className="black-box-strong rounded-3xl p-8 border border-neutral-800 shadow-[0_12px_36px_rgba(0,0,0,0.45)] text-white">
+          <div className="w-16 h-16 black-circle mx-auto flex items-center justify-center text-white mb-4">
             <WalletIcon className="w-8 h-8" />
           </div>
-          <h1 className="font-display font-black text-2xl text-slate-900">
+          <h1 className="font-display font-black text-2xl text-white">
             Sign In to Access Your Wallet
           </h1>
-          <p className="mt-2 text-sm text-slate-700 font-medium">
+          <p className="mt-2 text-sm text-neutral-300 font-medium">
             All marketplace buying, selling payouts, and withdrawals flow through your secure digital wallet.
           </p>
           <button
@@ -131,8 +131,8 @@ export const WalletPage: React.FC = () => {
       {/* Page Title & Breadcrumb */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full neu-flat text-[#0F172A] text-xs font-black uppercase tracking-wider mb-2 border border-slate-300">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full black-subbox text-white text-xs font-black uppercase tracking-wider mb-2 border border-neutral-700">
+            <Sparkles className="w-3.5 h-3.5 text-pink-300" />
             Beatrix.gl Financial Center
           </div>
           <h1 className="font-display font-black text-2xl sm:text-3xl text-[#0F172A]">
@@ -159,43 +159,43 @@ export const WalletPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Balance Card with Neomorphic Styling */}
-      <div className="frosted-glass-strong rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-[0_12px_36px_rgba(15,23,42,0.1)]">
+      {/* Main Balance Card */}
+      <div className="black-box-strong rounded-3xl p-6 sm:p-8 border border-neutral-800 shadow-[0_12px_36px_rgba(0,0,0,0.45)] text-white">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
           {/* Col 1: Primary Balance in INR */}
           <div className="md:col-span-2 space-y-2">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
-              <WalletIcon className="w-4 h-4 text-[#0F172A]" />
+            <span className="text-xs font-extrabold uppercase tracking-wider text-neutral-300 flex items-center gap-1.5">
+              <WalletIcon className="w-4 h-4 text-pink-300" />
               Available Balance
             </span>
             <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="font-display font-black text-3xl sm:text-5xl text-[#0F172A] tracking-tight">
+              <span className="font-display font-black text-3xl sm:text-5xl text-white tracking-tight">
                 {formatInr(balanceInr)}
               </span>
-              <span className="font-mono text-base sm:text-lg font-black text-[#0F172A] bg-slate-100 px-3.5 py-1 rounded-full border border-slate-300">
+              <span className="font-mono text-base sm:text-lg font-black text-pink-300 bg-neutral-900 px-3.5 py-1 rounded-full border border-neutral-700">
                 ≈ {formatPrice(balanceInUsd)}
               </span>
             </div>
-            <p className="text-xs text-slate-700 font-medium">
+            <p className="text-xs text-neutral-300 font-medium">
               Balances are stored in Indian Rupees (INR) and automatically converted into your chosen currency ({currency}).
             </p>
           </div>
 
           {/* Col 2: Minimum Withdrawal Limit Notice Box */}
-          <div className="neu-flat p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50/80 border border-amber-300">
-            <div className="flex items-center gap-2 text-amber-900 font-black text-xs">
-              <AlertCircle className="w-4 h-4 text-amber-700 shrink-0" />
+          <div className="black-subbox p-4 rounded-2xl border border-amber-700/80 text-amber-200">
+            <div className="flex items-center gap-2 text-amber-300 font-black text-xs">
+              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
               <span>Withdrawal Limit</span>
             </div>
             <div className="mt-2">
-              <div className="text-lg font-mono font-black text-amber-950">
+              <div className="text-lg font-mono font-black text-white">
                 ₹{minWithdrawalInr.toLocaleString()} INR
               </div>
-              <div className="text-xs font-bold text-amber-900 mt-0.5">
+              <div className="text-xs font-bold text-amber-300 mt-0.5">
                 ≈ {CURRENCIES[currency].symbol}{minLimitInActiveCurrency} {currency}
               </div>
             </div>
-            <p className="text-[11px] text-amber-900 font-medium mt-2 leading-relaxed">
+            <p className="text-[11px] text-neutral-300 font-medium mt-2 leading-relaxed">
               Minimum payout threshold for transfers to bank accounts, UPI, or PayPal.
             </p>
           </div>
@@ -203,19 +203,19 @@ export const WalletPage: React.FC = () => {
       </div>
 
       {/* Transaction History Section */}
-      <div className="frosted-glass-strong rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-[0_12px_36px_rgba(15,23,42,0.1)]">
+      <div className="black-box-strong rounded-3xl p-6 sm:p-8 border border-neutral-800 shadow-[0_12px_36px_rgba(0,0,0,0.45)] text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h2 className="font-display font-black text-lg text-slate-900">
+            <h2 className="font-display font-black text-lg text-white">
               Transaction History
             </h2>
-            <p className="text-xs text-slate-700 font-medium">
+            <p className="text-xs text-neutral-300 font-medium">
               Audit log of all deposits, order payments, seller payouts, and withdrawals.
             </p>
           </div>
 
           {/* Filter Tabs (Navy) */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl neu-flat bg-white/90 border border-slate-300">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl black-subbox border border-neutral-800">
             {(['all', 'deposits', 'withdrawals', 'orders'] as const).map((tab) => (
               <button
                 key={tab}
@@ -224,7 +224,7 @@ export const WalletPage: React.FC = () => {
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all ${
                   activeTab === tab
                     ? 'btn-navy text-white shadow-xs'
-                    : 'text-slate-800 hover:text-[#0F172A]'
+                    : 'text-neutral-300 hover:text-white'
                 }`}
               >
                 {tab}
@@ -235,29 +235,29 @@ export const WalletPage: React.FC = () => {
 
         {/* Transactions Table / List */}
         {filteredTransactions.length === 0 ? (
-          <div className="py-12 text-center text-slate-600 space-y-2">
-            <Clock className="w-8 h-8 mx-auto text-slate-400" />
-            <div className="text-sm font-bold text-slate-800">No transactions recorded yet.</div>
-            <p className="text-xs text-slate-600 font-medium max-w-sm mx-auto">
+          <div className="py-12 text-center text-neutral-300 space-y-2">
+            <Clock className="w-8 h-8 mx-auto text-neutral-500" />
+            <div className="text-sm font-bold text-white">No transactions recorded yet.</div>
+            <p className="text-xs text-neutral-400 font-medium max-w-sm mx-auto">
               When you deposit funds, purchase items, or withdraw money, every action will appear here with timestamps.
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-200">
+          <div className="divide-y divide-neutral-800">
             {filteredTransactions.map((tx) => {
               const isCredit = tx.type === 'Deposit' || tx.type === 'Sale';
               const inUsd = tx.amountInr / CURRENCIES.INR.rate;
               return (
                 <div
                   key={tx.id}
-                  className="py-3.5 flex items-center justify-between gap-4 hover:bg-slate-50/70 px-2 rounded-xl transition-colors"
+                  className="py-3.5 flex items-center justify-between gap-4 hover:bg-neutral-900/70 px-2 rounded-xl transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div
                       className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
                         isCredit
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-rose-100 text-rose-800'
+                          ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                          : 'bg-rose-950 text-rose-300 border border-rose-800'
                       }`}
                     >
                       {isCredit ? (
@@ -267,10 +267,10 @@ export const WalletPage: React.FC = () => {
                       )}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-xs font-extrabold text-slate-900 truncate">
+                      <div className="text-xs font-extrabold text-white truncate">
                         {tx.description || tx.type}
                       </div>
-                      <div className="text-[11px] text-slate-600 font-mono font-semibold">
+                      <div className="text-[11px] text-neutral-400 font-mono font-semibold">
                         {tx.createdAt?.toDate ? tx.createdAt.toDate().toLocaleString() : 'Just now'}
                       </div>
                     </div>
@@ -279,12 +279,12 @@ export const WalletPage: React.FC = () => {
                   <div className="text-right shrink-0">
                     <div
                       className={`font-mono text-xs sm:text-sm font-black ${
-                        isCredit ? 'text-emerald-700' : 'text-slate-900'
+                        isCredit ? 'text-emerald-400' : 'text-white'
                       }`}
                     >
                       {isCredit ? '+' : '-'}{formatInr(tx.amountInr)}
                     </div>
-                    <div className="text-[10px] font-mono text-slate-600 font-semibold">
+                    <div className="text-[10px] font-mono text-neutral-400 font-semibold">
                       ≈ {formatPrice(inUsd)}
                     </div>
                   </div>
@@ -297,21 +297,21 @@ export const WalletPage: React.FC = () => {
 
       {/* Deposit Modal */}
       {showDepositModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+          <div className="bg-black text-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-neutral-800 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-[#0F172A] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-700 text-pink-300 flex items-center justify-center">
                   <PlusCircle className="w-5 h-5" />
                 </div>
-                <h3 className="font-display font-black text-lg text-slate-900">
+                <h3 className="font-display font-black text-lg text-white">
                   Add Funds to Wallet
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowDepositModal(false)}
-                className="text-slate-500 hover:text-slate-800 p-1 font-bold"
+                className="text-neutral-400 hover:text-white p-1 font-bold"
               >
                 ✕
               </button>
@@ -319,13 +319,13 @@ export const WalletPage: React.FC = () => {
 
             <form onSubmit={handleDepositSubmit} className="space-y-4">
               {depositError && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold">
+                <div className="p-3 rounded-xl bg-rose-950 border border-rose-800 text-rose-200 text-xs font-bold">
                   {depositError}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1.5">
+                <label className="block text-xs font-extrabold uppercase tracking-wider text-white mb-1.5">
                   Select Quick Amount (INR)
                 </label>
                 <div className="grid grid-cols-4 gap-2 mb-3">
@@ -337,7 +337,7 @@ export const WalletPage: React.FC = () => {
                       className={`py-2 px-1 rounded-xl text-xs font-mono font-bold transition-all ${
                         depositAmount === amt
                           ? 'btn-navy text-white shadow-xs'
-                          : 'neu-flat text-slate-800 hover:border-slate-400'
+                          : 'black-subbox text-neutral-200 hover:border-neutral-500'
                       }`}
                     >
                       ₹{amt}
@@ -345,7 +345,7 @@ export const WalletPage: React.FC = () => {
                   ))}
                 </div>
 
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wider text-white mb-1">
                   Or Custom Amount (INR)
                 </label>
                 <input
@@ -355,15 +355,15 @@ export const WalletPage: React.FC = () => {
                   required
                   value={depositAmount}
                   onChange={(e) => setDepositAmount(Math.max(50, Number(e.target.value)))}
-                  className="w-full neu-pressed rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0F172A] border border-slate-300"
+                  className="w-full black-input rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-white focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
-                <span className="text-[11px] font-mono text-slate-600 font-semibold mt-1 block">
+                <span className="text-[11px] font-mono text-neutral-400 font-semibold mt-1 block">
                   Converted: {formatPrice(depositAmount / CURRENCIES.INR.rate)}
                 </span>
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wider text-white mb-1">
                   Note / Description
                 </label>
                 <input
@@ -371,7 +371,7 @@ export const WalletPage: React.FC = () => {
                   value={depositDesc}
                   onChange={(e) => setDepositDesc(e.target.value)}
                   maxLength={100}
-                  className="w-full neu-pressed rounded-xl px-4 py-2 text-xs text-slate-900 font-medium border border-slate-300"
+                  className="w-full black-input rounded-xl px-4 py-2 text-xs text-white font-medium"
                 />
               </div>
 
@@ -391,40 +391,40 @@ export const WalletPage: React.FC = () => {
 
       {/* Withdraw Modal */}
       {showWithdrawModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+          <div className="bg-black text-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-neutral-800 animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-slate-100 text-[#0F172A] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-700 text-pink-300 flex items-center justify-center">
                   <ArrowUpRight className="w-5 h-5" />
                 </div>
-                <h3 className="font-display font-black text-lg text-slate-900">
+                <h3 className="font-display font-black text-lg text-white">
                   Withdraw Funds
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowWithdrawModal(false)}
-                className="text-slate-500 hover:text-slate-800 p-1 font-bold"
+                className="text-neutral-400 hover:text-white p-1 font-bold"
               >
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleWithdrawSubmit} className="space-y-4">
-              <div className="p-3 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center justify-between font-bold">
+              <div className="p-3 rounded-xl bg-amber-950 border border-amber-700 text-amber-200 text-xs flex items-center justify-between font-bold">
                 <span>Minimum Withdrawal Limit:</span>
-                <span className="font-mono font-black">₹{minWithdrawalInr.toLocaleString()} INR</span>
+                <span className="font-mono font-black text-white">₹{minWithdrawalInr.toLocaleString()} INR</span>
               </div>
 
               {withdrawError && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold">
+                <div className="p-3 rounded-xl bg-rose-950 border border-rose-800 text-rose-200 text-xs font-bold">
                   {withdrawError}
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wider text-white mb-1">
                   Withdrawal Amount (INR) *
                 </label>
                 <input
@@ -434,16 +434,16 @@ export const WalletPage: React.FC = () => {
                   required
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(Number(e.target.value))}
-                  className="w-full neu-pressed rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0F172A] border border-slate-300"
+                  className="w-full black-input rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-white focus:outline-none focus:ring-2 focus:ring-pink-400"
                 />
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-600 font-semibold mt-1">
+                <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 font-semibold mt-1">
                   <span>Balance: {formatInr(balanceInr)}</span>
                   <span>≈ {formatPrice(withdrawAmount / CURRENCIES.INR.rate)}</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold uppercase tracking-wider text-slate-900 mb-1">
+                <label className="block text-xs font-extrabold uppercase tracking-wider text-white mb-1">
                   Payout Destination (Bank Account, UPI ID, or PayPal) *
                 </label>
                 <textarea
@@ -453,7 +453,7 @@ export const WalletPage: React.FC = () => {
                   onChange={(e) => setPayoutDetails(e.target.value)}
                   placeholder="e.g. UPI: name@oksbi OR Bank: IFSC HDFC0000123, Acc #123456789"
                   maxLength={200}
-                  className="w-full neu-pressed rounded-xl px-4 py-2 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-[#0F172A] resize-none border border-slate-300"
+                  className="w-full black-input rounded-xl px-4 py-2 text-xs text-white font-medium placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-pink-400 resize-none"
                 />
               </div>
 

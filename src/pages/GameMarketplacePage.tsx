@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -22,13 +22,22 @@ export const GameMarketplacePage: React.FC = () => {
   const [deliveryFilter, setDeliveryFilter] = useState<string>('all');
   const [inStockOnly, setInStockOnly] = useState<boolean>(true);
   const [bannerError, setBannerError] = useState(false);
+  const [iconError, setIconError] = useState(false);
 
-  const game = useMemo(
-    () =>
-      games.find((g) => g.slug === slug || g.id === slug) ||
-      catalogueGames.find((g) => g.slug === slug || g.id === slug),
-    [games, catalogueGames, slug]
-  );
+  useEffect(() => {
+    setBannerError(false);
+    setIconError(false);
+  }, [slug]);
+
+  const game = useMemo(() => {
+    const firestoreMatch = games.find((g) => g.slug === slug || g.id === slug);
+    const catalogueMatch = catalogueGames.find((g) => g.slug === slug || g.id === slug);
+    if (!firestoreMatch) return catalogueMatch;
+    if (!firestoreMatch.iconUrl && catalogueMatch?.iconUrl) {
+      return { ...firestoreMatch, iconUrl: catalogueMatch.iconUrl };
+    }
+    return firestoreMatch;
+  }, [games, catalogueGames, slug]);
 
   const gameCategories = useMemo(() => {
     if (!game) return categories;
@@ -86,8 +95,8 @@ export const GameMarketplacePage: React.FC = () => {
   if (loadingData) {
     return (
       <main className="max-w-[1400px] w-full max-w-full min-w-0 mx-auto px-4 sm:px-6 py-10 space-y-6">
-        <div className="h-56 rounded-3xl frosted-glass animate-pulse" />
-        <div className="h-14 rounded-2xl frosted-glass animate-pulse" />
+        <div className="h-56 rounded-3xl black-box animate-pulse" />
+        <div className="h-14 rounded-2xl black-box animate-pulse" />
       </main>
     );
   }
@@ -95,11 +104,11 @@ export const GameMarketplacePage: React.FC = () => {
   if (!game) {
     return (
       <main className="max-w-[1400px] w-full max-w-full min-w-0 mx-auto px-4 sm:px-6 py-16 text-center space-y-4">
-        <div className="w-14 h-14 rounded-2xl neu-circle flex items-center justify-center mx-auto text-[#0F172A] bg-slate-100">
+        <div className="w-14 h-14 rounded-2xl black-circle flex items-center justify-center mx-auto text-white">
           <PackageOpen className="w-8 h-8" />
         </div>
         <h1 className="font-display font-black text-2xl text-slate-900">Game Not Found</h1>
-        <p className="text-sm text-slate-700 font-medium max-w-md mx-auto">
+        <p className="text-sm text-slate-800 font-medium max-w-md mx-auto">
           The requested game catalog could not be found or has not been created yet.
         </p>
         <Link
@@ -117,20 +126,20 @@ export const GameMarketplacePage: React.FC = () => {
     <main className="space-y-8 pb-16 w-full max-w-full overflow-x-hidden min-w-0">
       {/* Custom Game Header Banner */}
       <section className="relative w-full max-w-full py-6 px-4 sm:px-6">
-        <div className="max-w-[1400px] w-full mx-auto relative rounded-3xl frosted-glass-strong p-6 sm:p-10 border border-slate-200 shadow-[0_12px_36px_rgba(15,23,42,0.08)] overflow-hidden min-w-0 space-y-6">
+        <div className="max-w-[1400px] w-full mx-auto relative rounded-3xl black-box-strong p-6 sm:p-10 border border-neutral-800 shadow-[0_16px_38px_rgba(0,0,0,0.45)] overflow-hidden min-w-0 space-y-6">
           {game.bannerUrl && !bannerError && (
             <img
               src={game.bannerUrl}
               alt={game.title}
               referrerPolicy="no-referrer"
               onError={() => setBannerError(true)}
-              className="absolute inset-0 w-full h-full object-cover opacity-12 pointer-events-none"
+              className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
             />
           )}
 
           <Link
             to="/"
-            className="relative z-10 inline-flex items-center gap-1.5 text-xs font-bold text-[#0F172A] hover:text-blue-900 transition-colors"
+            className="relative z-10 inline-flex items-center gap-1.5 text-xs font-bold text-neutral-300 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>All Marketplace Games</span>
@@ -138,12 +147,15 @@ export const GameMarketplacePage: React.FC = () => {
 
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 min-w-0">
             <div className="flex items-center gap-4 min-w-0">
-              {game.iconUrl ? (
+              {game.iconUrl && !iconError ? (
                 <img
                   src={game.iconUrl}
                   alt={game.title}
+                  loading="eager"
+                  decoding="async"
                   referrerPolicy="no-referrer"
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-white bg-white shadow-md shrink-0"
+                  onError={() => setIconError(true)}
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-neutral-700 bg-black shadow-md shrink-0"
                 />
               ) : (
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl btn-navy text-white font-brand font-normal text-3xl flex items-center justify-center shadow-md shrink-0">
@@ -151,21 +163,21 @@ export const GameMarketplacePage: React.FC = () => {
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 font-script text-base text-[#0F172A] font-bold truncate">
-                  <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-[#0F172A]" />
+                <div className="flex items-center gap-2 font-script text-base text-pink-300 font-bold truncate">
+                  <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-pink-300" />
                   <span>Verified Game Marketplace</span>
                 </div>
-                <h1 className="font-vintage font-extrabold text-2xl sm:text-4xl text-[#0F172A] mt-0.5 truncate break-words">
+                <h1 className="font-vintage font-extrabold text-2xl sm:text-4xl text-white mt-0.5 truncate break-words">
                   {game.title}
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-800 font-bold mt-1 font-mono tabular-nums">
+                <p className="text-xs sm:text-sm text-neutral-300 font-bold mt-1 font-mono tabular-nums">
                   {gameListings.length} matching {gameListings.length === 1 ? 'offer' : 'offers'} available
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Game-Specific Category Tabs (Navy) */}
+          {/* Game-Specific Category Tabs */}
           <div className="relative z-10 pt-2 flex flex-wrap items-center gap-2 min-w-0">
             <button
               type="button"
@@ -173,7 +185,7 @@ export const GameMarketplacePage: React.FC = () => {
               className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
                 selectedCategoryId === 'all'
                   ? 'btn-navy text-white shadow-xs'
-                  : 'neu-flat text-slate-800 hover:text-[#0F172A] border border-slate-300'
+                  : 'black-subbox text-white hover:border-pink-300 border border-neutral-700'
               }`}
             >
               All Offers
@@ -186,7 +198,7 @@ export const GameMarketplacePage: React.FC = () => {
                 className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
                   selectedCategoryId === cat.id
                     ? 'btn-navy text-white shadow-xs'
-                    : 'neu-flat text-slate-800 hover:text-[#0F172A] border border-slate-300'
+                    : 'black-subbox text-white hover:border-pink-300 border border-neutral-700'
                 }`}
               >
                 {cat.name}
@@ -198,17 +210,17 @@ export const GameMarketplacePage: React.FC = () => {
 
       {/* Filter & Sort Controls Bar */}
       <section className="max-w-[1400px] w-full max-w-full min-w-0 mx-auto px-4 sm:px-6 space-y-6">
-        <div className="frosted-glass rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 border border-slate-200 shadow-sm min-w-0">
+        <div className="black-box rounded-2xl p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 border border-neutral-800 shadow-sm min-w-0">
           {/* Search within game offers */}
           <div className="relative flex-1 min-w-0">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={`Search ${game.title} offers by keyword or seller...`}
               aria-label="Search game offers"
-              className="w-full neu-pressed rounded-full pl-10 pr-4 py-2 text-xs sm:text-sm text-slate-900 font-semibold placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F172A] transition-all"
+              className="w-full black-input rounded-full pl-10 pr-4 py-2 text-xs sm:text-sm text-white font-semibold placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-white transition-all"
             />
           </div>
 
@@ -216,14 +228,14 @@ export const GameMarketplacePage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3 min-w-0">
             {/* Delivery Speed Filter */}
             <div className="flex items-center gap-2">
-              <label htmlFor="delivery-filter" className="text-xs font-bold text-slate-800 whitespace-nowrap">
+              <label htmlFor="delivery-filter" className="text-xs font-bold text-neutral-200 whitespace-nowrap">
                 Delivery:
               </label>
               <select
                 id="delivery-filter"
                 value={deliveryFilter}
                 onChange={(e) => setDeliveryFilter(e.target.value)}
-                className="neu-pressed rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0F172A] font-bold"
+                className="black-input rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-white font-bold"
               >
                 <option value="all">All Speeds</option>
                 {availableDeliverySpeeds.map((speed) => (
@@ -236,7 +248,7 @@ export const GameMarketplacePage: React.FC = () => {
 
             {/* Price & Rating Sort */}
             <div className="flex items-center gap-2">
-              <label htmlFor="price-sort" className="text-xs font-bold text-slate-800 whitespace-nowrap">
+              <label htmlFor="price-sort" className="text-xs font-bold text-neutral-200 whitespace-nowrap">
                 Sort:
               </label>
               <select
@@ -245,7 +257,7 @@ export const GameMarketplacePage: React.FC = () => {
                 onChange={(e) =>
                   setPriceSort(e.target.value as 'none' | 'asc' | 'desc' | 'rating')
                 }
-                className="neu-pressed rounded-xl px-3 py-1.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0F172A] font-bold"
+                className="black-input rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-white font-bold"
               >
                 <option value="none">Recommended</option>
                 <option value="asc">Price: Low to High</option>
@@ -261,7 +273,7 @@ export const GameMarketplacePage: React.FC = () => {
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                 inStockOnly
                   ? 'btn-navy text-white shadow-xs'
-                  : 'neu-flat text-slate-800 border border-slate-300'
+                  : 'black-subbox text-white border border-neutral-700'
               }`}
             >
               {inStockOnly ? 'In Stock Only: ON' : 'Include Out of Stock'}
@@ -271,12 +283,12 @@ export const GameMarketplacePage: React.FC = () => {
 
         {/* Listings Grid */}
         {gameListings.length === 0 ? (
-          <div className="frosted-glass rounded-3xl p-12 text-center space-y-3 border border-slate-300">
-            <SlidersHorizontal className="w-8 h-8 text-slate-600 mx-auto" />
-            <h2 className="font-display font-black text-lg text-slate-900">
+          <div className="black-box rounded-3xl p-12 text-center space-y-3 border border-neutral-800">
+            <SlidersHorizontal className="w-8 h-8 text-neutral-300 mx-auto" />
+            <h2 className="font-display font-black text-lg text-white">
               No matching offers found for {game.title}
             </h2>
-            <p className="text-xs text-slate-700 font-medium max-w-md mx-auto">
+            <p className="text-xs text-neutral-300 font-medium max-w-md mx-auto">
               Either no offers have been published for this category yet, or your active filters
               excluded them.
             </p>
@@ -300,13 +312,13 @@ export const GameMarketplacePage: React.FC = () => {
               <Link
                 key={offer.id}
                 to={`/listing/${offer.id}`}
-                className="group frosted-glass hover:frosted-glass-strong rounded-2xl p-5 flex flex-col justify-between gap-4 border border-slate-200 hover:border-slate-400 hover:shadow-[0_12px_28px_rgba(15,23,42,0.12)] transition-all duration-200 hover:-translate-y-1 min-w-0 overflow-hidden"
+                className="group black-box hover:black-box-strong rounded-2xl p-5 flex flex-col justify-between gap-4 border border-neutral-800 hover:border-neutral-600 hover:shadow-[0_14px_32px_rgba(0,0,0,0.5)] transition-all duration-200 hover:-translate-y-1 min-w-0 overflow-hidden"
               >
                 <div className="space-y-3 min-w-0">
-                  <div className="flex items-center justify-between text-xs text-slate-700 font-medium">
-                    <span className="font-bold text-[#0F172A] truncate">{offer.categoryName}</span>
-                    <span className="inline-flex items-center gap-1 text-emerald-800 font-bold shrink-0">
-                      <Clock className="w-3.5 h-3.5 text-emerald-700" />
+                  <div className="flex items-center justify-between text-xs text-neutral-300 font-medium">
+                    <span className="font-bold text-white truncate">{offer.categoryName}</span>
+                    <span className="inline-flex items-center gap-1 text-emerald-400 font-bold shrink-0">
+                      <Clock className="w-3.5 h-3.5 text-emerald-400" />
                       {offer.deliverySpeed}
                     </span>
                   </div>
@@ -317,38 +329,38 @@ export const GameMarketplacePage: React.FC = () => {
                         src={offer.imageUrl}
                         alt={offer.title}
                         referrerPolicy="no-referrer"
-                        className="w-14 h-14 rounded-xl object-cover bg-slate-100 border border-slate-300 shadow-xs shrink-0"
+                        className="w-14 h-14 rounded-xl object-cover bg-neutral-900 border border-neutral-700 shadow-xs shrink-0"
                       />
                     )}
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-vintage font-bold text-base text-[#0F172A] group-hover:text-blue-900 transition-colors line-clamp-2 break-words">
+                      <h3 className="font-vintage font-bold text-base text-white group-hover:text-pink-300 transition-colors line-clamp-2 break-words">
                         {offer.title}
                       </h3>
-                      <p className="text-xs text-slate-700 font-medium line-clamp-2 mt-1 break-words">
+                      <p className="text-xs text-neutral-300 font-medium line-clamp-2 mt-1 break-words">
                         {offer.description}
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-3.5 border-t border-slate-200 flex items-center justify-between gap-4 min-w-0">
-                  <div className="text-xs text-slate-700 flex items-center gap-1.5 min-w-0 flex-1">
-                    <span className="text-[#0F172A] font-bold truncate">
+                <div className="pt-3.5 border-t border-neutral-800 flex items-center justify-between gap-4 min-w-0">
+                  <div className="text-xs text-neutral-300 flex items-center gap-1.5 min-w-0 flex-1">
+                    <span className="text-white font-bold truncate">
                       {offer.sellerName}
                     </span>
-                    <span aria-hidden="true" className="text-slate-400">·</span>
-                    <span className="inline-flex items-center gap-1 text-slate-900 font-mono font-bold tabular-nums shrink-0">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
+                    <span aria-hidden="true" className="text-neutral-600">·</span>
+                    <span className="inline-flex items-center gap-1 text-white font-mono font-bold tabular-nums shrink-0">
+                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                       {Number(offer.sellerRating).toFixed(1)}
                     </span>
-                    <span aria-hidden="true" className="text-slate-400">·</span>
-                    <span className="font-mono tabular-nums text-slate-600 font-semibold shrink-0">
+                    <span aria-hidden="true" className="text-neutral-600">·</span>
+                    <span className="font-mono tabular-nums text-neutral-300 font-semibold shrink-0">
                       {offer.stock > 0 ? `${offer.stock} left` : '0 left'}
                     </span>
                   </div>
 
                   <div className="text-right shrink-0">
-                    <div className="font-mono font-black text-lg text-[#0F172A] tabular-nums">
+                    <div className="font-mono font-black text-lg text-white tabular-nums">
                       {formatPrice(offer.price)}
                     </div>
                   </div>

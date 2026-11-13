@@ -19,6 +19,7 @@ import poe2Img from '../assets/images/poe2_relic_card_1794513261705.jpg';
 import overwatchImg from '../assets/images/overwatch_hero_card_1794513261155.jpg';
 import brawlStarsImg from '../assets/images/brawl_stars_card_1794513263154.jpg';
 import { Game } from '../types';
+import { GAME_LOGOS } from './gameLogos';
 
 export interface ProminentGameCard {
   id: string;
@@ -235,7 +236,8 @@ export const TOP_20_PROMINENT_GAMES: ProminentGameCard[] = [
 ];
 
 /**
- * Raw 339 Game Titles from eldorado_games_catalogue_4c3fad1b.csv
+ * Full game catalogue sourced from eldorado_games_catalogue_4c3fad1b.csv
+ * expanded with the complete Grand Theft Auto series.
  */
 export const RAW_CATALOGUE_TITLES: string[] = [
   '8 Ball Pool',
@@ -388,7 +390,25 @@ export const RAW_CATALOGUE_TITLES: string[] = [
   'Goddess of Victory: Nikke',
   'Grand Blue',
   'Grand Piece Online',
+  'Grand Theft Auto',
+  'Grand Theft Auto 2',
   'Grand Theft Auto 5',
+  'Grand Theft Auto Advance',
+  'Grand Theft Auto III',
+  'Grand Theft Auto IV',
+  'Grand Theft Auto IV: The Lost and Damned',
+  'Grand Theft Auto Online',
+  'Grand Theft Auto VI',
+  'Grand Theft Auto: Chinatown Wars',
+  'Grand Theft Auto: Episodes from Liberty City',
+  'Grand Theft Auto: Liberty City Stories',
+  'Grand Theft Auto: London 1961',
+  'Grand Theft Auto: London 1969',
+  'Grand Theft Auto: San Andreas',
+  'Grand Theft Auto: The Ballad of Gay Tony',
+  'Grand Theft Auto: The Trilogy - The Definitive Edition',
+  'Grand Theft Auto: Vice City',
+  'Grand Theft Auto: Vice City Stories',
   'Greedy Growers',
   'Greenville',
   'Grow a Garden',
@@ -589,9 +609,8 @@ function titleToSlug(title: string): string {
 }
 
 /**
- * Builds the full Game array for the entire 339-game catalogue.
- * Intentionally contains no attached images — used for search suggestions,
- * seller/admin game selection, and dynamic /game/:slug routing.
+ * Builds the full Game array for the complete marketplace catalogue.
+ * Used for search suggestions, seller/admin game selection, and dynamic /game/:slug routing.
  */
 export const DEFAULT_GAMES_CATALOGUE: Game[] = RAW_CATALOGUE_TITLES.map((title, index) => {
   const slug = titleToSlug(title) || `game-${index}`;
@@ -600,7 +619,7 @@ export const DEFAULT_GAMES_CATALOGUE: Game[] = RAW_CATALOGUE_TITLES.map((title, 
     id: `cat_${slug}`,
     title,
     slug,
-    iconUrl: '',
+    iconUrl: GAME_LOGOS[slug] || '',
     bannerUrl: '',
     featured: false,
     categoryIds: [],

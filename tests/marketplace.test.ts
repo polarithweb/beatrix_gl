@@ -9,6 +9,7 @@ import {
   getMinWithdrawalInCurrency,
   MIN_WITHDRAWAL_INR,
   FIELD_LIMITS,
+  DEFAULT_BRAND_LOGO_PATH,
 } from '../src/types';
 
 describe('Marketplace Security & Validation Utilities', () => {
@@ -39,6 +40,7 @@ describe('Marketplace Security & Validation Utilities', () => {
   it('rejects javascript: and invalid URLs while allowing https, relative paths, and image data URIs', () => {
     assert.equal(isValidImageUrlOrDataUri('https://example.com/img.png'), true);
     assert.equal(isValidImageUrlOrDataUri('/assets/banner.jpg'), true);
+    assert.equal(isValidImageUrlOrDataUri(`./${DEFAULT_BRAND_LOGO_PATH}`), true);
     assert.equal(isValidImageUrlOrDataUri('data:image/jpeg;base64,/9j/4AAQ'), true);
     assert.equal(isValidImageUrlOrDataUri(''), true);
     assert.equal(isValidImageUrlOrDataUri('javascript:alert(1)'), false);
@@ -53,7 +55,8 @@ describe('Marketplace Security & Validation Utilities', () => {
 });
 
 describe('Games Catalogue & Top 20 Integrity', () => {
-  it('includes all game titles from CSV with empty iconUrl and bannerUrl on catalogue entries', () => {
+  it('includes all CSV game titles, the full GTA series, and 100% verified logo coverage', async () => {
+    const { GAME_LOGOS } = await import('../src/data/gameLogos');
     const catalogueSource = fs.readFileSync(
       path.resolve('src/data/gamesCatalogue.ts'),
       'utf-8'
@@ -69,15 +72,82 @@ describe('Games Catalogue & Top 20 Integrity', () => {
       .map((line) => line.trim())
       .filter(Boolean);
 
+    const rawTitlesBlock =
+      catalogueSource.split('export const RAW_CATALOGUE_TITLES: string[] = [')[1]?.split('];')[0] ||
+      '';
+    const catalogueTitles = [...rawTitlesBlock.matchAll(/^\s*'((?:[^'\\\r\n]|\\.)+)',$/gm)].map(
+      (match) => match[1].replace(/\\'/g, "'")
+    );
+
+    const titleToSlug = (title: string): string =>
+      title
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/[\s_]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+
+    const gtaSeriesTitles = [
+      'Grand Theft Auto',
+      'Grand Theft Auto 2',
+      'Grand Theft Auto 5',
+      'Grand Theft Auto Advance',
+      'Grand Theft Auto III',
+      'Grand Theft Auto IV',
+      'Grand Theft Auto IV: The Lost and Damned',
+      'Grand Theft Auto Online',
+      'Grand Theft Auto VI',
+      'Grand Theft Auto: Chinatown Wars',
+      'Grand Theft Auto: Episodes from Liberty City',
+      'Grand Theft Auto: Liberty City Stories',
+      'Grand Theft Auto: London 1961',
+      'Grand Theft Auto: London 1969',
+      'Grand Theft Auto: San Andreas',
+      'Grand Theft Auto: The Ballad of Gay Tony',
+      'Grand Theft Auto: The Trilogy - The Definitive Edition',
+      'Grand Theft Auto: Vice City',
+      'Grand Theft Auto: Vice City Stories',
+    ];
+
+    const top20Section =
+      catalogueSource.split('export const TOP_20_PROMINENT_GAMES')[1]?.split('];')[0] || '';
+    const top20Slugs = [...top20Section.matchAll(/slug:\s*'([a-z0-9-]+)'/g)].map((m) => m[1]);
+
     assert.equal(csvTitles.length, 338);
-    assert.match(catalogueSource, /iconUrl:\s*''/);
+    assert.equal(catalogueTitles.length, 356);
+    assert.equal(top20Slugs.length, 20);
+    assert.match(catalogueSource, /iconUrl:\s*GAME_LOGOS\[slug\]\s*\|\|\s*''/);
     assert.match(catalogueSource, /bannerUrl:\s*''/);
     assert.match(catalogueSource, /featured:\s*false/);
-    for (const title of csvTitles.slice(0, 10)) {
-      const escaped = title.replace(/'/g, "\\'");
+    for (const [slug, url] of Object.entries(GAME_LOGOS)) {
+      assert.match(slug, /^[a-z0-9-]+$/);
+      assert.match(url, /^https:\/\//);
+    }
+    for (const slug of top20Slugs) {
       assert.ok(
-        catalogueSource.includes(`'${escaped}'`),
-        `Expected catalogue to include ${title}`
+        Boolean(GAME_LOGOS[slug]),
+        `Expected verified logo for Top 20 game ${slug}`
+      );
+    }
+    for (const title of csvTitles) {
+      assert.ok(
+        catalogueTitles.includes(title),
+        `Expected catalogue to include CSV title ${title}`
+      );
+    }
+    for (const gtaTitle of gtaSeriesTitles) {
+      assert.ok(
+        catalogueTitles.includes(gtaTitle),
+        `Expected catalogue to include GTA series title ${gtaTitle}`
+      );
+    }
+    for (const title of catalogueTitles) {
+      const slug = titleToSlug(title);
+      const logoUrl = GAME_LOGOS[slug];
+      assert.ok(
+        Boolean(logoUrl) && logoUrl.startsWith('https://'),
+        `Expected verified https logo for catalogue game ${title} (${slug})`
       );
     }
   });
@@ -140,11 +210,26 @@ describe('Deployment & GitHub Actions Readiness', () => {
     assert.match(workflow, /actions\/deploy-pages@v4/);
   });
 
-  it('uses HashRouter and BASE_URL-relative public asset paths in App.tsx', () => {
+  it('uses HashRouter and BASE_URL-relative public asset paths across App, Navbar, Footer, and index.html', () => {
     const appSource = fs.readFileSync(path.resolve('src/App.tsx'), 'utf-8');
+    const navbarSource = fs.readFileSync(path.resolve('src/components/Navbar.tsx'), 'utf-8');
+    const footerSource = fs.readFileSync(path.resolve('src/components/Footer.tsx'), 'utf-8');
+    const indexHtmlSource = fs.readFileSync(path.resolve('index.html'), 'utf-8');
+
     assert.match(appSource, /HashRouter/);
     assert.match(appSource, /import\.meta\.env\.BASE_URL/);
     assert.equal(appSource.includes('src="/assets/'), false);
+
+    assert.equal(DEFAULT_BRAND_LOGO_PATH, 'assets/aistudio/IMG_20261113_114213_0165f38a.jpg');
+    assert.equal(fs.existsSync(path.resolve('public', DEFAULT_BRAND_LOGO_PATH)), true);
+    assert.match(navbarSource, /DEFAULT_BRAND_LOGO_PATH/);
+    assert.match(navbarSource, /import\.meta\.env\.BASE_URL/);
+    assert.match(navbarSource, /<header\s+className="bg-black\b/);
+    assert.equal(navbarSource.includes('src="/assets/'), false);
+    assert.match(footerSource, /DEFAULT_BRAND_LOGO_PATH/);
+    assert.match(footerSource, /import\.meta\.env\.BASE_URL/);
+    assert.equal(footerSource.includes('src="/assets/'), false);
+    assert.match(indexHtmlSource, /\.\/assets\/aistudio\/IMG_20261113_114213_0165f38a\.jpg/);
   });
 
   it('binds firebase.json to the provisioned named Firestore database', () => {
@@ -157,6 +242,28 @@ describe('Deployment & GitHub Actions Readiness', () => {
     assert.equal(firebaseJson.firestore.database, appletConfig.firestoreDatabaseId);
     assert.equal(firebaseJson.firestore.rules, 'firestore.rules');
     assert.equal(firebaseJson.hosting.public, 'dist');
+  });
+
+  it('defines black-box storefront theme utilities with white typography across pages', () => {
+    const indexCss = fs.readFileSync(path.resolve('src/index.css'), 'utf-8');
+    const homeSource = fs.readFileSync(path.resolve('src/pages/HomePage.tsx'), 'utf-8');
+    const footerSource = fs.readFileSync(path.resolve('src/components/Footer.tsx'), 'utf-8');
+    const navbarSource = fs.readFileSync(path.resolve('src/components/Navbar.tsx'), 'utf-8');
+    const sellerSource = fs.readFileSync(path.resolve('src/pages/SellerDashboardPage.tsx'), 'utf-8');
+    const walletSource = fs.readFileSync(path.resolve('src/pages/WalletPage.tsx'), 'utf-8');
+    const chatSource = fs.readFileSync(path.resolve('src/pages/ChatPage.tsx'), 'utf-8');
+
+    assert.match(indexCss, /\.black-box\s*\{/);
+    assert.match(indexCss, /\.black-box-strong\s*\{/);
+    assert.match(indexCss, /\.black-subbox\s*\{/);
+    assert.match(indexCss, /\.black-input\s*\{/);
+    assert.match(homeSource, /black-box-strong/);
+    assert.match(homeSource, /black-box\b/);
+    assert.match(footerSource, /<footer\s+className="bg-black text-white/);
+    assert.match(navbarSource, /className="relative w-full max-w-md bg-black text-white/);
+    assert.match(sellerSource, /black-box-strong/);
+    assert.match(walletSource, /black-box-strong/);
+    assert.match(chatSource, /black-box-strong/);
   });
 });
 
